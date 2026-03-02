@@ -1,0 +1,1961 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STUDYFLOW @ F.Rouillé - 2026</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Archivo:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* Thèmes pastel avec plus d'intensité */
+        [data-theme="dark"] {
+            --bg-primary: #1a1f3a;
+            --bg-secondary: #252b47;
+            --bg-card: #2d3451;
+            --accent-primary: #7c9dd4;
+            --accent-secondary: #a18cd6;
+            --text-primary: #e8edf3;
+            --text-secondary: #b0b8c8;
+            --border-color: #3d4566;
+            --state-0: #8b90a8;
+            --state-1: #e8a567;
+            --state-2: #7bc67e;
+            --priority-high: #ff6b9d;
+            --priority-medium: #ffa94d;
+            --priority-low: #69c0ff;
+        }
+
+        [data-theme="light"] {
+            --bg-primary: #e8e4f3;
+            --bg-secondary: #f5f2ff;
+            --bg-card: #ffffff;
+            --accent-primary: #8b7fc7;
+            --accent-secondary: #b89cc7;
+            --text-primary: #2a2a3a;
+            --text-secondary: #5a5a6a;
+            --border-color: #d0c9e0;
+            --state-0: #a8afc8;
+            --state-1: #e8a567;
+            --state-2: #7bc67e;
+            --priority-high: #ff6b9d;
+            --priority-medium: #ffa94d;
+            --priority-low: #69c0ff;
+        }
+
+        [data-theme="blue"] {
+            --bg-primary: #cfe2ff;
+            --bg-secondary: #e3f2fd;
+            --bg-card: #ffffff;
+            --accent-primary: #5b9bd5;
+            --accent-secondary: #7bb3e0;
+            --text-primary: #1a3a5f;
+            --text-secondary: #3a5a7a;
+            --border-color: #a3c9f0;
+            --state-0: #90a4b8;
+            --state-1: #ffb84d;
+            --state-2: #66d9a7;
+            --priority-high: #ff7096;
+            --priority-medium: #ffb84d;
+            --priority-low: #5b9bd5;
+        }
+
+        [data-theme="green"] {
+            --bg-primary: #d0f0d0;
+            --bg-secondary: #e3f8e3;
+            --bg-card: #ffffff;
+            --accent-primary: #66b866;
+            --accent-secondary: #7bc67e;
+            --text-primary: #1e4d2e;
+            --text-secondary: #3a6a4a;
+            --border-color: #a8d6a8;
+            --state-0: #90a4b8;
+            --state-1: #ffb84d;
+            --state-2: #66b866;
+            --priority-high: #ff6b9d;
+            --priority-medium: #ffb84d;
+            --priority-low: #69c0ff;
+        }
+
+        [data-theme="orange"] {
+            --bg-primary: #ffe4c8;
+            --bg-secondary: #fff0e0;
+            --bg-card: #ffffff;
+            --accent-primary: #ff9d5c;
+            --accent-secondary: #ffb380;
+            --text-primary: #4d3017;
+            --text-secondary: #6d4c37;
+            --border-color: #ffc99e;
+            --state-0: #a8afc8;
+            --state-1: #ff9d5c;
+            --state-2: #7bc67e;
+            --priority-high: #ff6b6b;
+            --priority-medium: #ff9d5c;
+            --priority-low: #69c0ff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Archivo', sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 1.5rem;
+            transition: background 0.3s ease, color 0.3s ease;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            animation: fadeIn 0.8s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .header-left h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 2rem;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            margin-bottom: 0.3rem;
+        }
+
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+        }
+
+        .toolbar {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .theme-selector {
+            display: flex;
+            gap: 0.4rem;
+        }
+
+        .theme-btn {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: 3px solid var(--border-color);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .theme-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+
+        .theme-btn.active::after {
+            content: '✓';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            color: white;
+            font-weight: bold;
+            text-shadow: 0 1px 3px rgba(0, 0, 0, 0.5);
+        }
+
+        .theme-btn[data-theme="dark"] { background: linear-gradient(135deg, #1a1f3a, #2d3451); }
+        .theme-btn[data-theme="light"] { background: linear-gradient(135deg, #e8e4f3, #f5f2ff); }
+        .theme-btn[data-theme="blue"] { background: linear-gradient(135deg, #cfe2ff, #e3f2fd); }
+        .theme-btn[data-theme="green"] { background: linear-gradient(135deg, #d0f0d0, #e3f8e3); }
+        .theme-btn[data-theme="orange"] { background: linear-gradient(135deg, #ffe4c8, #fff0e0); }
+
+        .file-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        button, .btn {
+            background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 0.6rem 1.2rem;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Archivo', sans-serif;
+            white-space: nowrap;
+        }
+
+        button:hover, .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="file"] { display: none; }
+
+        .main-layout {
+            display: grid;
+            grid-template-columns: 280px 1fr;
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .sidebar-section {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.2rem;
+        }
+
+        .sidebar-title {
+            font-weight: 700;
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+
+        .tabs-container {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .tab {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 0.5rem;
+        }
+
+        .tab:hover {
+            background: var(--bg-primary);
+            border-color: var(--accent-primary);
+        }
+
+        .tab.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .tab-name {
+            flex: 1;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .tab-count {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 0.2rem 0.5rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 700;
+        }
+
+        .tab-delete {
+            background: transparent;
+            color: inherit;
+            border: none;
+            padding: 0;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            opacity: 0.6;
+            transition: all 0.2s ease;
+        }
+
+        .tab-delete:hover {
+            opacity: 1;
+            background: rgba(239, 68, 68, 0.3);
+            transform: rotate(90deg);
+        }
+
+        .add-tab-btn {
+            background: var(--bg-secondary);
+            border: 2px dashed var(--border-color);
+            color: var(--text-primary);
+            justify-content: center;
+        }
+
+        .add-tab-btn:hover {
+            border-color: var(--accent-primary);
+            color: var(--accent-primary);
+            background: var(--bg-primary);
+        }
+
+        /* Filtres */
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-btn {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.7rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .filter-btn:hover {
+            background: var(--bg-primary);
+            border-color: var(--accent-primary);
+            color: var(--text-primary);
+        }
+
+        .filter-btn.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+            font-weight: 600;
+        }
+
+        .filter-icon {
+            font-size: 1.1rem;
+        }
+
+        /* Tags */
+        .tags-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+        }
+
+        .tag-item {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 16px;
+            padding: 0.3rem 0.8rem;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-primary);
+        }
+
+        .tag-item:hover, .tag-item.active {
+            background: var(--accent-primary);
+            color: white;
+            border-color: var(--accent-primary);
+        }
+
+        /* Vue stats mini */
+        .mini-stats {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 0.8rem;
+        }
+
+        .mini-stat {
+            text-align: center;
+            padding: 0.8rem;
+            background: var(--bg-secondary);
+            border-radius: 8px;
+        }
+
+        .mini-stat-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-primary);
+        }
+
+        .mini-stat-label {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+            margin-top: 0.2rem;
+            text-transform: uppercase;
+        }
+
+        /* Contenu principal */
+        .main-content {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .content-header {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stat-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-2px);
+            border-color: var(--accent-primary);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            font-family: 'Space Mono', monospace;
+            color: var(--accent-primary);
+            line-height: 1;
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .progress-section {
+            margin-bottom: 1rem;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+            transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+            border-radius: 10px;
+        }
+
+        .controls-bar {
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .search-box {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-secondary);
+        }
+
+        input[type="text"], input[type="date"], textarea, select {
+            width: 100%;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            padding: 0.8rem;
+            color: var(--text-primary);
+            font-size: 0.95rem;
+            font-family: 'Archivo', sans-serif;
+            transition: all 0.3s ease;
+        }
+
+        .search-box input {
+            padding-left: 2.8rem;
+        }
+
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: var(--accent-primary);
+            box-shadow: 0 0 0 3px rgba(var(--accent-primary), 0.1);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 0.3rem;
+            background: var(--bg-secondary);
+            padding: 0.3rem;
+            border-radius: 8px;
+        }
+
+        .view-btn {
+            padding: 0.5rem 0.8rem;
+            background: transparent;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: auto;
+        }
+
+        .view-btn.active {
+            background: var(--accent-primary);
+            color: white;
+        }
+
+        .sort-select {
+            padding: 0.6rem 1rem;
+            min-width: 180px;
+        }
+
+        /* Cours */
+        .courses-container {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+        }
+
+        .courses-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.2rem;
+        }
+
+        .courses-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .course-card {
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.3rem;
+            transition: all 0.3s ease;
+            position: relative;
+            cursor: pointer;
+        }
+
+        .course-card:hover {
+            border-color: var(--accent-primary);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .course-card.priority-high {
+            border-left: 4px solid var(--priority-high);
+        }
+
+        .course-card.priority-medium {
+            border-left: 4px solid var(--priority-medium);
+        }
+
+        .course-card.priority-low {
+            border-left: 4px solid var(--priority-low);
+        }
+
+        .course-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+        }
+
+        .course-icon {
+            font-size: 1.8rem;
+            margin-right: 0.5rem;
+        }
+
+        .course-title-row {
+            display: flex;
+            align-items: flex-start;
+            flex: 1;
+        }
+
+        .course-info {
+            flex: 1;
+        }
+
+        .course-name {
+            font-size: 1.15rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.3rem;
+        }
+
+        .course-meta {
+            display: flex;
+            gap: 0.8rem;
+            flex-wrap: wrap;
+            font-size: 0.8rem;
+            color: var(--text-secondary);
+            margin-top: 0.5rem;
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .meta-item.overdue {
+            color: var(--priority-high);
+            font-weight: 600;
+        }
+
+        .course-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            margin: 0.8rem 0;
+        }
+
+        .course-tag {
+            background: var(--bg-primary);
+            border: 1px solid var(--border-color);
+            padding: 0.2rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+        }
+
+        .course-actions {
+            display: flex;
+            gap: 0.3rem;
+        }
+
+        .action-btn {
+            background: transparent;
+            border: none;
+            width: 32px;
+            height: 32px;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            padding: 0;
+            min-width: auto;
+        }
+
+        .action-btn:hover {
+            background: var(--bg-primary);
+            color: var(--accent-primary);
+            transform: scale(1.1) translateY(0);
+        }
+
+        .delete-btn:hover {
+            background: rgba(239, 68, 68, 0.2);
+            color: #ef4444;
+        }
+
+        .slider-container {
+            margin-top: 1rem;
+        }
+
+        .state-label {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.8rem;
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+        }
+
+        .current-state {
+            font-weight: 700;
+            padding: 0.2rem 0.8rem;
+            border-radius: 16px;
+            font-size: 0.8rem;
+        }
+
+        .current-state.state-0 {
+            background: rgba(139, 144, 168, 0.3);
+            color: var(--state-0);
+        }
+
+        .current-state.state-1 {
+            background: rgba(232, 165, 103, 0.3);
+            color: var(--state-1);
+        }
+
+        .current-state.state-2 {
+            background: rgba(123, 198, 126, 0.3);
+            color: var(--state-2);
+        }
+
+        .slider-track {
+            position: relative;
+            height: 8px;
+            background: var(--bg-primary);
+            border-radius: 10px;
+            margin-bottom: 0.5rem;
+        }
+
+        .slider-fill {
+            position: absolute;
+            height: 100%;
+            border-radius: 10px;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            -webkit-appearance: none;
+            appearance: none;
+            background: transparent;
+            cursor: pointer;
+            position: relative;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 3px solid var(--accent-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        input[type="range"]::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--bg-card);
+            border: 3px solid var(--accent-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        .state-markers {
+            display: flex;
+            justify-content: space-between;
+            padding: 0 8px;
+            margin-top: 0.5rem;
+        }
+
+        .marker {
+            font-size: 0.7rem;
+            color: var(--text-secondary);
+        }
+
+        .course-notes {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+
+        .notes-preview {
+            font-size: 0.85rem;
+            color: var(--text-secondary);
+            font-style: italic;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.6);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
+        }
+
+        .modal.active {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2rem;
+            max-width: 600px;
+            width: 100%;
+            max-height: 90vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .modal-close {
+            background: transparent;
+            border: none;
+            font-size: 1.8rem;
+            color: var(--text-secondary);
+            cursor: pointer;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 6px;
+            transition: all 0.3s ease;
+            padding: 0;
+            min-width: auto;
+        }
+
+        .modal-close:hover {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            transform: rotate(90deg) translateY(0);
+        }
+
+        .form-group {
+            margin-bottom: 1.2rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-primary);
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+
+        .icon-picker {
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            gap: 0.5rem;
+            margin-top: 0.5rem;
+        }
+
+        .icon-option {
+            width: 100%;
+            aspect-ratio: 1;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            font-size: 1.5rem;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+            padding: 0;
+            min-width: auto;
+        }
+
+        .icon-option:hover {
+            border-color: var(--accent-primary);
+            transform: scale(1.1) translateY(0);
+        }
+
+        .icon-option.selected {
+            border-color: var(--accent-primary);
+            background: var(--accent-primary);
+        }
+
+        .priority-options {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 0.8rem;
+        }
+
+        .priority-option {
+            padding: 0.8rem;
+            border: 2px solid var(--border-color);
+            background: var(--bg-secondary);
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .priority-option:hover {
+            transform: translateY(-2px);
+        }
+
+        .priority-option.selected {
+            border-width: 3px;
+        }
+
+        .priority-option.high {
+            border-color: var(--priority-high);
+            color: var(--priority-high);
+        }
+
+        .priority-option.high.selected {
+            background: var(--priority-high);
+            color: white;
+        }
+
+        .priority-option.medium {
+            border-color: var(--priority-medium);
+            color: var(--priority-medium);
+        }
+
+        .priority-option.medium.selected {
+            background: var(--priority-medium);
+            color: white;
+        }
+
+        .priority-option.low {
+            border-color: var(--priority-low);
+            color: var(--priority-low);
+        }
+
+        .priority-option.low.selected {
+            background: var(--priority-low);
+            color: white;
+        }
+
+        .tags-input-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.4rem;
+            padding: 0.5rem;
+            background: var(--bg-secondary);
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            min-height: 45px;
+        }
+
+        .tag-chip {
+            background: var(--accent-primary);
+            color: white;
+            padding: 0.3rem 0.7rem;
+            border-radius: 16px;
+            font-size: 0.85rem;
+            display: flex;
+            align-items: center;
+            gap: 0.4rem;
+        }
+
+        .tag-remove {
+            background: transparent;
+            border: none;
+            color: white;
+            cursor: pointer;
+            font-size: 1.1rem;
+            padding: 0;
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: all 0.2s ease;
+            min-width: auto;
+        }
+
+        .tag-remove:hover {
+            background: rgba(255, 255, 255, 0.2);
+            transform: scale(1.1) translateY(0);
+        }
+
+        .tag-input {
+            flex: 1;
+            min-width: 120px;
+            border: none;
+            background: transparent;
+            padding: 0.3rem;
+            font-size: 0.9rem;
+        }
+
+        .tag-input:focus {
+            outline: none;
+            border: none;
+            box-shadow: none;
+        }
+
+        .modal-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .modal-buttons button {
+            flex: 1;
+        }
+
+        .btn-secondary {
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        @media (max-width: 1200px) {
+            .main-layout {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                order: 2;
+            }
+            
+            .main-content {
+                order: 1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            body {
+                padding: 1rem;
+            }
+
+            header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+
+            .toolbar {
+                width: 100%;
+            }
+
+            .courses-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+            }
+
+            .icon-picker {
+                grid-template-columns: repeat(6, 1fr);
+            }
+        }
+    </style>
+</head>
+<body data-theme="dark">
+    <div class="container">
+        <header>
+            <div class="header-left">
+                                <h1>📚 Gestionnaire de Progression - version Pro</h1>
+                <h2>--------STUDYFLOW @ F.Rouillé - 2026---------</h2>
+            </div>
+            <div class="toolbar">
+                <div class="theme-selector">
+                    <button class="theme-btn active" data-theme="dark" onclick="changeTheme('dark')" title="Sombre"></button>
+                    <button class="theme-btn" data-theme="light" onclick="changeTheme('light')" title="Clair"></button>
+                    <button class="theme-btn" data-theme="blue" onclick="changeTheme('blue')" title="Bleu"></button>
+                    <button class="theme-btn" data-theme="green" onclick="changeTheme('green')" title="Vert"></button>
+                    <button class="theme-btn" data-theme="orange" onclick="changeTheme('orange')" title="Orange"></button>
+                </div>
+                <div class="file-actions">
+                    <button onclick="saveToFile()">💾 Sauvegarder</button>
+                    <button onclick="document.getElementById('fileInput').click()">📂 Restaurer</button>
+                    <input type="file" id="fileInput" accept=".json" onchange="loadFromFile(event)">
+                </div>
+            </div>
+        </header>
+
+        <div class="main-layout">
+            <!-- Sidebar -->
+            <aside class="sidebar">
+                <!-- Classes -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Classes</div>
+                    <div class="tabs-container" id="tabsContainer"></div>
+                </div>
+
+                <!-- Filtres -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Filtres</div>
+                    <div class="filter-group">
+                        <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">
+                            <span class="filter-icon">📋</span>
+                            <span>Tous les cours</span>
+                        </button>
+                        <button class="filter-btn" data-filter="state-0" onclick="setFilter('state-0')">
+                            <span class="filter-icon">⭕</span>
+                            <span>À faire</span>
+                        </button>
+                        <button class="filter-btn" data-filter="state-1" onclick="setFilter('state-1')">
+                            <span class="filter-icon">🔄</span>
+                            <span>En cours</span>
+                        </button>
+                        <button class="filter-btn" data-filter="state-2" onclick="setFilter('state-2')">
+                            <span class="filter-icon">✅</span>
+                            <span>Terminés</span>
+                        </button>
+                        <button class="filter-btn" data-filter="overdue" onclick="setFilter('overdue')">
+                            <span class="filter-icon">⚠️</span>
+                            <span>En retard</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Tags -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Tags</div>
+                    <div class="tags-list" id="tagsList"></div>
+                </div>
+
+                <!-- Mini stats -->
+                <div class="sidebar-section">
+                    <div class="sidebar-title">Statistiques</div>
+                    <div class="mini-stats">
+                        <div class="mini-stat">
+                            <div class="mini-stat-value" id="miniTotal">0</div>
+                            <div class="mini-stat-label">Total</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="mini-stat-value" id="miniProgress">0%</div>
+                            <div class="mini-stat-label">Complété</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="mini-stat-value" id="miniWeek">0</div>
+                            <div class="mini-stat-label">Cette sem.</div>
+                        </div>
+                        <div class="mini-stat">
+                            <div class="mini-stat-value" id="miniOverdue">0</div>
+                            <div class="mini-stat-label">En retard</div>
+                        </div>
+                    </div>
+                </div>
+            </aside>
+
+            <!-- Contenu principal -->
+            <main class="main-content">
+                <!-- En-tête avec stats -->
+                <div class="content-header">
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalCourses">0</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="notStarted">0</div>
+                            <div class="stat-label">À faire</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="inProgress">0</div>
+                            <div class="stat-label">En cours</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="completed">0</div>
+                            <div class="stat-label">Terminés</div>
+                        </div>
+                    </div>
+
+                    <div class="progress-section">
+                        <div class="progress-header">
+                            <span>Progression globale</span>
+                            <span id="progressPercent">0%</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="globalProgress"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Barre de contrôle -->
+                <div class="controls-bar">
+                    <div class="search-box">
+                        <span class="search-icon">🔍</span>
+                        <input type="text" id="searchInput" placeholder="Rechercher un cours..." oninput="applyFilters()">
+                    </div>
+                    
+                    <select class="sort-select" id="sortSelect" onchange="applyFilters()">
+                        <option value="recent">Plus récents</option>
+                        <option value="name">Nom (A-Z)</option>
+                        <option value="priority">Priorité</option>
+                        <option value="deadline">Date d'échéance</option>
+                        <option value="state">État</option>
+                    </select>
+
+                    <div class="view-toggle">
+                        <button class="view-btn active" data-view="grid" onclick="setView('grid')">⊞</button>
+                        <button class="view-btn" data-view="list" onclick="setView('list')">☰</button>
+                    </div>
+
+                    <button onclick="openCourseModal()">➕ Nouveau cours</button>
+                </div>
+
+                <!-- Conteneur des cours -->
+                <div class="courses-container">
+                    <div class="courses-grid" id="coursesContainer"></div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Modal Classe -->
+    <div class="modal" id="addClassModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title">Nouvelle Classe</div>
+                <button class="modal-close" onclick="closeModal('addClassModal')">×</button>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Nom de la classe</label>
+                <input type="text" id="classNameInput" placeholder="Ex: Terminale S, Master 1..." onkeypress="if(event.key === 'Enter') confirmAddClass()">
+            </div>
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeModal('addClassModal')">Annuler</button>
+                <button onclick="confirmAddClass()">Créer</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Cours -->
+    <div class="modal" id="courseModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <div class="modal-title" id="courseModalTitle">Nouveau Cours</div>
+                <button class="modal-close" onclick="closeModal('courseModal')">×</button>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Icône</label>
+                <div class="icon-picker" id="iconPicker"></div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Nom du cours *</label>
+                <input type="text" id="courseName" placeholder="Ex: Mathématiques - Intégrales">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label class="form-label">Date d'échéance</label>
+                    <input type="date" id="courseDeadline">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Priorité</label>
+                    <div class="priority-options">
+                        <button class="priority-option high" data-priority="high" onclick="selectPriority('high')">
+                            Haute
+                        </button>
+                        <button class="priority-option medium selected" data-priority="medium" onclick="selectPriority('medium')">
+                            Moyenne
+                        </button>
+                        <button class="priority-option low" data-priority="low" onclick="selectPriority('low')">
+                            Basse
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Tags</label>
+                <div class="tags-input-container" id="tagsInputContainer">
+                    <input type="text" class="tag-input" id="tagInput" placeholder="Ajouter un tag..." onkeypress="handleTagInput(event)">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">Notes / Commentaires</label>
+                <textarea id="courseNotes" placeholder="Ajoutez des détails, ressources, liens..."></textarea>
+            </div>
+
+            <div class="modal-buttons">
+                <button class="btn-secondary" onclick="closeModal('courseModal')">Annuler</button>
+                <button onclick="saveCourse()" id="saveCourseBtn">Enregistrer</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const ICONS = ['📚', '📖', '✏️', '🎨', '🔬', '🧮', '💻', '🌍', '📊', '🎵', '⚡', '🎯', '🏆', '💡', '🔥', '⭐'];
+
+        let data = {
+            classes: [],
+            activeClassId: null,
+            theme: 'dark',
+            currentFilter: 'all',
+            currentView: 'grid',
+            currentSort: 'recent',
+            searchQuery: '',
+            activeTagFilter: null
+        };
+
+        let editingCourseId = null;
+        let selectedIcon = '📚';
+        let selectedPriority = 'medium';
+        let currentTags = [];
+
+        function init() {
+            loadData();
+            if (data.classes.length === 0) {
+                data.classes.push({
+                    id: Date.now(),
+                    name: 'Classe par défaut',
+                    courses: []
+                });
+            }
+            if (!data.activeClassId) {
+                data.activeClassId = data.classes[0].id;
+            }
+            if (data.theme) {
+                changeTheme(data.theme);
+            }
+            renderIconPicker();
+            render();
+        }
+
+        function saveData() {
+            localStorage.setItem('coursesDataPro', JSON.stringify(data));
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('coursesDataPro');
+            if (saved) {
+                const loaded = JSON.parse(saved);
+                data = { ...data, ...loaded };
+            }
+        }
+
+        function changeTheme(theme) {
+            document.body.setAttribute('data-theme', theme);
+            data.theme = theme;
+            saveData();
+            document.querySelectorAll('.theme-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
+            });
+        }
+
+        function getActiveClass() {
+            return data.classes.find(c => c.id === data.activeClassId);
+        }
+
+        function render() {
+            renderTabs();
+            renderCourses();
+            renderTagsList();
+            updateStats();
+        }
+
+        function renderTabs() {
+            const container = document.getElementById('tabsContainer');
+            container.innerHTML = data.classes.map(cls => {
+                const count = cls.courses.length;
+                return `
+                    <div class="tab ${cls.id === data.activeClassId ? 'active' : ''}" onclick="switchClass(${cls.id})">
+                        <span class="tab-name">${cls.name}</span>
+                        <span class="tab-count">${count}</span>
+                        ${data.classes.length > 1 ? `<button class="tab-delete" onclick="event.stopPropagation(); deleteClass(${cls.id})">×</button>` : ''}
+                    </div>
+                `;
+            }).join('') + `
+                <button class="add-tab-btn tab" onclick="openAddClassModal()">
+                    <span>+ Nouvelle classe</span>
+                </button>
+            `;
+        }
+
+        function switchClass(classId) {
+            data.activeClassId = classId;
+            data.currentFilter = 'all';
+            data.searchQuery = '';
+            data.activeTagFilter = null;
+            document.getElementById('searchInput').value = '';
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-filter') === 'all');
+            });
+            saveData();
+            render();
+        }
+
+        function openAddClassModal() {
+            document.getElementById('addClassModal').classList.add('active');
+            document.getElementById('classNameInput').value = '';
+            setTimeout(() => document.getElementById('classNameInput').focus(), 100);
+        }
+
+        function confirmAddClass() {
+            const name = document.getElementById('classNameInput').value.trim();
+            if (name) {
+                const newClass = {
+                    id: Date.now(),
+                    name: name,
+                    courses: []
+                };
+                data.classes.push(newClass);
+                data.activeClassId = newClass.id;
+                saveData();
+                closeModal('addClassModal');
+                render();
+            }
+        }
+
+        function deleteClass(classId) {
+            if (data.classes.length <= 1) {
+                alert('Vous devez avoir au moins une classe !');
+                return;
+            }
+            if (confirm('Supprimer cette classe et tous ses cours ?')) {
+                data.classes = data.classes.filter(c => c.id !== classId);
+                if (data.activeClassId === classId) {
+                    data.activeClassId = data.classes[0].id;
+                }
+                saveData();
+                render();
+            }
+        }
+
+        function renderIconPicker() {
+            const picker = document.getElementById('iconPicker');
+            picker.innerHTML = ICONS.map(icon => `
+                <button class="icon-option ${icon === selectedIcon ? 'selected' : ''}" 
+                        onclick="selectIcon('${icon}')" type="button">
+                    ${icon}
+                </button>
+            `).join('');
+        }
+
+        function selectIcon(icon) {
+            selectedIcon = icon;
+            renderIconPicker();
+        }
+
+        function selectPriority(priority) {
+            selectedPriority = priority;
+            document.querySelectorAll('.priority-option').forEach(btn => {
+                btn.classList.toggle('selected', btn.getAttribute('data-priority') === priority);
+            });
+        }
+
+        function handleTagInput(event) {
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                const input = event.target;
+                const tag = input.value.trim();
+                if (tag && !currentTags.includes(tag)) {
+                    currentTags.push(tag);
+                    input.value = '';
+                    renderTagsInput();
+                }
+            }
+        }
+
+        function removeTag(tag) {
+            currentTags = currentTags.filter(t => t !== tag);
+            renderTagsInput();
+        }
+
+        function renderTagsInput() {
+            const container = document.getElementById('tagsInputContainer');
+            const input = document.getElementById('tagInput');
+            const inputValue = input.value;
+            
+            container.innerHTML = currentTags.map(tag => `
+                <span class="tag-chip">
+                    ${tag}
+                    <button class="tag-remove" onclick="removeTag('${tag}')" type="button">×</button>
+                </span>
+            `).join('') + `
+                <input type="text" class="tag-input" id="tagInput" 
+                       placeholder="Ajouter un tag..." 
+                       onkeypress="handleTagInput(event)" 
+                       value="${inputValue}">
+            `;
+            
+            document.getElementById('tagInput').focus();
+        }
+
+        function openCourseModal(courseId = null) {
+            editingCourseId = courseId;
+            const modal = document.getElementById('courseModal');
+            const title = document.getElementById('courseModalTitle');
+            
+            if (courseId) {
+                title.textContent = 'Modifier le cours';
+                const activeClass = getActiveClass();
+                const course = activeClass.courses.find(c => c.id === courseId);
+                
+                document.getElementById('courseName').value = course.name;
+                document.getElementById('courseDeadline').value = course.deadline || '';
+                document.getElementById('courseNotes').value = course.notes || '';
+                selectedIcon = course.icon || '📚';
+                selectedPriority = course.priority || 'medium';
+                currentTags = [...(course.tags || [])];
+                
+                renderIconPicker();
+                selectPriority(selectedPriority);
+                renderTagsInput();
+            } else {
+                title.textContent = 'Nouveau Cours';
+                document.getElementById('courseName').value = '';
+                document.getElementById('courseDeadline').value = '';
+                document.getElementById('courseNotes').value = '';
+                selectedIcon = '📚';
+                selectedPriority = 'medium';
+                currentTags = [];
+                
+                renderIconPicker();
+                selectPriority('medium');
+                renderTagsInput();
+            }
+            
+            modal.classList.add('active');
+            setTimeout(() => document.getElementById('courseName').focus(), 100);
+        }
+
+        function saveCourse() {
+            const name = document.getElementById('courseName').value.trim();
+            if (!name) {
+                alert('Le nom du cours est obligatoire');
+                return;
+            }
+
+            const activeClass = getActiveClass();
+            const courseData = {
+                name: name,
+                icon: selectedIcon,
+                priority: selectedPriority,
+                deadline: document.getElementById('courseDeadline').value || null,
+                tags: [...currentTags],
+                notes: document.getElementById('courseNotes').value.trim(),
+                state: 0
+            };
+
+            if (editingCourseId) {
+                const course = activeClass.courses.find(c => c.id === editingCourseId);
+                Object.assign(course, courseData);
+            } else {
+                courseData.id = Date.now();
+                courseData.createdAt = new Date().toISOString();
+                activeClass.courses.push(courseData);
+            }
+
+            saveData();
+            closeModal('courseModal');
+            render();
+        }
+
+        function deleteCourse(courseId) {
+            if (confirm('Supprimer ce cours ?')) {
+                const activeClass = getActiveClass();
+                activeClass.courses = activeClass.courses.filter(c => c.id !== courseId);
+                saveData();
+                render();
+            }
+        }
+
+        function updateCourseState(courseId, value) {
+            const activeClass = getActiveClass();
+            const course = activeClass.courses.find(c => c.id === courseId);
+            if (course) {
+                course.state = parseInt(value);
+                if (course.state === 2 && !course.completedAt) {
+                    course.completedAt = new Date().toISOString();
+                }
+                saveData();
+                render();
+            }
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.remove('active');
+        }
+
+        function setFilter(filter) {
+            data.currentFilter = filter;
+            data.activeTagFilter = null;
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-filter') === filter);
+            });
+            document.querySelectorAll('.tag-item').forEach(tag => {
+                tag.classList.remove('active');
+            });
+            applyFilters();
+        }
+
+        function setTagFilter(tag) {
+            if (data.activeTagFilter === tag) {
+                data.activeTagFilter = null;
+            } else {
+                data.activeTagFilter = tag;
+                data.currentFilter = 'all';
+                document.querySelectorAll('.filter-btn').forEach(btn => {
+                    btn.classList.toggle('active', btn.getAttribute('data-filter') === 'all');
+                });
+            }
+            renderTagsList();
+            applyFilters();
+        }
+
+        function setView(view) {
+            data.currentView = view;
+            document.querySelectorAll('.view-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.getAttribute('data-view') === view);
+            });
+            renderCourses();
+        }
+
+        function applyFilters() {
+            data.searchQuery = document.getElementById('searchInput').value.toLowerCase();
+            data.currentSort = document.getElementById('sortSelect').value;
+            renderCourses();
+        }
+
+        function getAllTags() {
+            const activeClass = getActiveClass();
+            const tags = new Set();
+            activeClass.courses.forEach(course => {
+                (course.tags || []).forEach(tag => tags.add(tag));
+            });
+            return Array.from(tags);
+        }
+
+        function renderTagsList() {
+            const container = document.getElementById('tagsList');
+            const tags = getAllTags();
+            
+            if (tags.length === 0) {
+                container.innerHTML = '<div style="color: var(--text-secondary); font-size: 0.85rem;">Aucun tag</div>';
+            } else {
+                container.innerHTML = tags.map(tag => `
+                    <button class="tag-item ${data.activeTagFilter === tag ? 'active' : ''}" 
+                            onclick="setTagFilter('${tag}')">
+                        ${tag}
+                    </button>
+                `).join('');
+            }
+        }
+
+        function getFilteredCourses() {
+            const activeClass = getActiveClass();
+            let courses = [...activeClass.courses];
+
+            // Filtre par état ou retard
+            if (data.currentFilter !== 'all') {
+                if (data.currentFilter === 'overdue') {
+                    const today = new Date().toISOString().split('T')[0];
+                    courses = courses.filter(c => c.deadline && c.deadline < today && c.state !== 2);
+                } else if (data.currentFilter.startsWith('state-')) {
+                    const state = parseInt(data.currentFilter.split('-')[1]);
+                    courses = courses.filter(c => c.state === state);
+                }
+            }
+
+            // Filtre par tag
+            if (data.activeTagFilter) {
+                courses = courses.filter(c => (c.tags || []).includes(data.activeTagFilter));
+            }
+
+            // Recherche
+            if (data.searchQuery) {
+                courses = courses.filter(c => 
+                    c.name.toLowerCase().includes(data.searchQuery) ||
+                    (c.notes || '').toLowerCase().includes(data.searchQuery) ||
+                    (c.tags || []).some(tag => tag.toLowerCase().includes(data.searchQuery))
+                );
+            }
+
+            // Tri
+            switch (data.currentSort) {
+                case 'name':
+                    courses.sort((a, b) => a.name.localeCompare(b.name));
+                    break;
+                case 'priority':
+                    const priorityOrder = { high: 0, medium: 1, low: 2 };
+                    courses.sort((a, b) => priorityOrder[a.priority || 'medium'] - priorityOrder[b.priority || 'medium']);
+                    break;
+                case 'deadline':
+                    courses.sort((a, b) => {
+                        if (!a.deadline) return 1;
+                        if (!b.deadline) return -1;
+                        return a.deadline.localeCompare(b.deadline);
+                    });
+                    break;
+                case 'state':
+                    courses.sort((a, b) => a.state - b.state);
+                    break;
+                default: // recent
+                    courses.sort((a, b) => b.id - a.id);
+            }
+
+            return courses;
+        }
+
+        function formatDate(dateStr) {
+            if (!dateStr) return '';
+            const date = new Date(dateStr);
+            const options = { day: 'numeric', month: 'short' };
+            return date.toLocaleDateString('fr-FR', options);
+        }
+
+        function isOverdue(course) {
+            if (!course.deadline || course.state === 2) return false;
+            const today = new Date().toISOString().split('T')[0];
+            return course.deadline < today;
+        }
+
+        function getStateLabel(state) {
+            return ['À faire', 'En cours', 'Terminé'][state];
+        }
+
+        function getStateColor(state) {
+            return ['var(--state-0)', 'var(--state-1)', 'var(--state-2)'][state];
+        }
+
+        function renderCourses() {
+            const container = document.getElementById('coursesContainer');
+            const courses = getFilteredCourses();
+            
+            container.className = data.currentView === 'grid' ? 'courses-grid' : 'courses-list';
+
+            if (courses.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📚</div>
+                        <p>Aucun cours trouvé</p>
+                        <p style="font-size: 0.9rem;">Ajoutez un cours ou modifiez vos filtres</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = courses.map((course, index) => {
+                const overdue = isOverdue(course);
+                const priorityClass = `priority-${course.priority || 'medium'}`;
+                
+                return `
+                    <div class="course-card ${priorityClass}" style="animation-delay: ${index * 0.05}s">
+                        <div class="course-header">
+                            <div class="course-title-row">
+                                <span class="course-icon">${course.icon || '📚'}</span>
+                                <div class="course-info">
+                                    <div class="course-name">${course.name}</div>
+                                    ${course.tags && course.tags.length > 0 ? `
+                                        <div class="course-tags">
+                                            ${course.tags.map(tag => `<span class="course-tag">${tag}</span>`).join('')}
+                                        </div>
+                                    ` : ''}
+                                    <div class="course-meta">
+                                        ${course.deadline ? `
+                                            <span class="meta-item ${overdue ? 'overdue' : ''}">
+                                                📅 ${formatDate(course.deadline)}
+                                                ${overdue ? ' ⚠️' : ''}
+                                            </span>
+                                        ` : ''}
+                                        <span class="meta-item">
+                                            ${course.priority === 'high' ? '🔴' : course.priority === 'low' ? '🔵' : '🟡'}
+                                            ${course.priority === 'high' ? 'Haute' : course.priority === 'low' ? 'Basse' : 'Moyenne'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="course-actions">
+                                <button class="action-btn" onclick="openCourseModal(${course.id})" title="Modifier">✏️</button>
+                                <button class="action-btn delete-btn" onclick="deleteCourse(${course.id})" title="Supprimer">🗑️</button>
+                            </div>
+                        </div>
+
+                        <div class="slider-container">
+                            <div class="state-label">
+                                <span>Progression</span>
+                                <span class="current-state state-${course.state}">${getStateLabel(course.state)}</span>
+                            </div>
+                            <div class="slider-track">
+                                <div class="slider-fill" style="width: ${course.state * 50}%; background: ${getStateColor(course.state)};"></div>
+                            </div>
+                            <input type="range" min="0" max="2" step="1" value="${course.state}"
+                                   onchange="updateCourseState(${course.id}, this.value)"
+                                   onclick="event.stopPropagation()">
+                            <div class="state-markers">
+                                <span class="marker">À faire</span>
+                                <span class="marker">En cours</span>
+                                <span class="marker">Terminé</span>
+                            </div>
+                        </div>
+
+                        ${course.notes ? `
+                            <div class="course-notes">
+                                <div class="notes-preview">${course.notes}</div>
+                            </div>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateStats() {
+            const activeClass = getActiveClass();
+            const courses = activeClass.courses;
+            const total = courses.length;
+            const notStarted = courses.filter(c => c.state === 0).length;
+            const inProgress = courses.filter(c => c.state === 1).length;
+            const completed = courses.filter(c => c.state === 2).length;
+            const progress = total > 0 ? Math.round((completed / total) * 100) : 0;
+
+            // Stats principales
+            document.getElementById('totalCourses').textContent = total;
+            document.getElementById('notStarted').textContent = notStarted;
+            document.getElementById('inProgress').textContent = inProgress;
+            document.getElementById('completed').textContent = completed;
+            document.getElementById('globalProgress').style.width = progress + '%';
+            document.getElementById('progressPercent').textContent = progress + '%';
+
+            // Mini stats sidebar
+            document.getElementById('miniTotal').textContent = total;
+            document.getElementById('miniProgress').textContent = progress + '%';
+
+            // Cours de la semaine
+            const weekAgo = new Date();
+            weekAgo.setDate(weekAgo.getDate() - 7);
+            const thisWeek = courses.filter(c => new Date(c.createdAt) > weekAgo).length;
+            document.getElementById('miniWeek').textContent = thisWeek;
+
+            // En retard
+            const today = new Date().toISOString().split('T')[0];
+            const overdue = courses.filter(c => c.deadline && c.deadline < today && c.state !== 2).length;
+            document.getElementById('miniOverdue').textContent = overdue;
+        }
+
+        function saveToFile() {
+            const now = new Date();
+            const dateStr = now.toISOString().replace(/[:.]/g, '-').slice(0, -5);
+            const filename = `CAL-progression-${dateStr}.json`;
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const blob = new Blob([dataStr], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function loadFromFile(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const loadedData = JSON.parse(e.target.result);
+                    data = { ...data, ...loadedData };
+                    if (!data.activeClassId && data.classes.length > 0) {
+                        data.activeClassId = data.classes[0].id;
+                    }
+                    if (data.theme) {
+                        changeTheme(data.theme);
+                    }
+                    saveData();
+                    render();
+                    alert('Données restaurées avec succès !');
+                } catch (error) {
+                    alert('Erreur : ' + error.message);
+                }
+            };
+            reader.readAsText(file);
+            event.target.value = '';
+        }
+
+        // Initialisation
+        init();
+    </script>
+</body>
+</html>
