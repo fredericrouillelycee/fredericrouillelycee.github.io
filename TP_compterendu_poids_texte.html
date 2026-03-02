@@ -1,0 +1,694 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>TP — Poids informatique du texte</title>
+<link href="https://fonts.googleapis.com/css2?family=Merriweather:wght@300;400;700&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1a56db;
+    --blue-light: #e8f0fe;
+    --green: #0e7c40;
+    --green-light: #e6f4ea;
+    --orange: #b45309;
+    --orange-light: #fef3c7;
+    --red: #b91c1c;
+    --red-light: #fee2e2;
+    --grey: #f5f5f5;
+    --border: #d1d5db;
+    --text: #1a1a1a;
+    --mono: 'IBM Plex Mono', monospace;
+    --serif: 'Merriweather', serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    font-family: var(--serif);
+    font-size: 13pt;
+    line-height: 1.7;
+    color: var(--text);
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 2cm 1.5cm;
+    background: white;
+  }
+
+  /* EN-TÊTE */
+  .header-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 2px solid var(--text);
+    margin-bottom: 1.5rem;
+  }
+  .header-table td { padding: 0.4rem 0.8rem; }
+  .header-table .title-cell {
+    font-size: 1.2rem;
+    font-weight: 700;
+    text-align: center;
+    border-bottom: 2px solid var(--text);
+    padding: 0.6rem;
+    background: var(--grey);
+  }
+  .header-table .info { border-right: 1px solid var(--border); }
+  .field-label { font-size: 0.75rem; font-family: var(--mono); color: #666; display: block; }
+  .field-line { border-bottom: 1px solid #aaa; height: 1.4rem; display: block; }
+
+  /* TITRES */
+  h1 {
+    font-size: 1.5rem;
+    text-align: center;
+    margin: 1.5rem 0 0.3rem;
+    letter-spacing: -0.01em;
+  }
+  h1 .sub { font-size: 0.9rem; font-weight: 300; display: block; color: #555; }
+
+  h2 {
+    font-size: 1.05rem;
+    border-left: 5px solid var(--blue);
+    padding-left: 0.7rem;
+    margin: 2rem 0 0.8rem;
+    color: var(--blue);
+  }
+
+  h3 {
+    font-size: 0.95rem;
+    font-family: var(--mono);
+    color: var(--green);
+    margin: 1.2rem 0 0.4rem;
+  }
+
+  /* BLOCS SPÉCIAUX */
+  .objectif {
+    background: var(--blue-light);
+    border-left: 4px solid var(--blue);
+    border-radius: 0 6px 6px 0;
+    padding: 0.8rem 1rem;
+    margin: 1rem 0;
+    font-size: 0.92rem;
+  }
+
+  .objectif strong { color: var(--blue); }
+
+  .rappel {
+    background: var(--green-light);
+    border: 1px solid #86efac;
+    border-radius: 6px;
+    padding: 0.8rem 1rem;
+    margin: 0.8rem 0;
+    font-size: 0.88rem;
+  }
+
+  .rappel .rappel-title {
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--green);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+  }
+
+  .attention {
+    background: var(--orange-light);
+    border: 1px solid #fbbf24;
+    border-radius: 6px;
+    padding: 0.7rem 1rem;
+    font-size: 0.85rem;
+    margin: 0.8rem 0;
+  }
+
+  .attention::before { content: "⚠️ "; }
+
+  .formule {
+    background: #1a1a1a;
+    color: #00e5a0;
+    font-family: var(--mono);
+    font-size: 0.88rem;
+    border-radius: 6px;
+    padding: 0.8rem 1.2rem;
+    margin: 0.8rem 0;
+    line-height: 2;
+  }
+
+  .formule .comment { color: #666; font-style: italic; }
+
+  /* QUESTIONS */
+  .question {
+    margin: 0.7rem 0;
+    padding: 0.5rem 0;
+  }
+
+  .q-num {
+    display: inline-block;
+    background: var(--blue);
+    color: white;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    font-weight: 600;
+    padding: 0.1rem 0.45rem;
+    border-radius: 3px;
+    margin-right: 0.4rem;
+    vertical-align: middle;
+  }
+
+  .reponse {
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    min-height: 2rem;
+    margin: 0.3rem 0 0.6rem;
+    padding: 0.3rem 0.5rem;
+    background: #fafafa;
+  }
+
+  .reponse.lg { min-height: 3.5rem; }
+  .reponse.xl { min-height: 5rem; }
+
+  /* TABLEAU */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.85rem;
+    margin: 0.8rem 0;
+  }
+  th {
+    background: var(--grey);
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.6rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    text-align: left;
+  }
+  td {
+    border: 1px solid var(--border);
+    padding: 0.4rem 0.6rem;
+  }
+  td.fill { background: #f9fafb; }
+  .cell-answer { background: #fffbeb; }
+
+  /* Encodage chips */
+  .chip {
+    display: inline-block;
+    font-family: var(--mono);
+    font-size: 0.72rem;
+    background: var(--grey);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    padding: 0.1rem 0.4rem;
+    margin: 0.1rem;
+  }
+
+  /* Séparateur de partie */
+  .part-sep {
+    display: flex;
+    align-items: center;
+    gap: 0.8rem;
+    margin: 2.5rem 0 1.5rem;
+    font-family: var(--mono);
+    font-size: 0.75rem;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+  }
+  .part-sep::before, .part-sep::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: var(--border);
+  }
+
+  /* BILAN */
+  .bilan {
+    background: var(--grey);
+    border: 2px solid var(--text);
+    border-radius: 6px;
+    padding: 1rem 1.2rem;
+    margin-top: 2rem;
+  }
+  .bilan h2 { border: none; padding: 0; margin: 0 0 0.6rem; color: var(--text); font-size: 1rem; }
+
+  footer {
+    text-align: center;
+    font-size: 0.65rem;
+    font-family: var(--mono);
+    color: #aaa;
+    margin-top: 3rem;
+    border-top: 1px solid var(--border);
+    padding-top: 0.8rem;
+  }
+
+
+/* =============================================
+   BOUTON IMPRIMER
+   ============================================= */
+.print-bar {
+  position: sticky;
+  bottom: 1.5rem;
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  z-index: 100;
+}
+
+.btn-print {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.6rem;
+  background: linear-gradient(135deg, var(--glow-blue), #6a4eff);
+  color: black;
+  font-family: var(--sans);
+  font-weight: 700;
+  font-size: 0.9rem;
+  padding: 0.75rem 1.8rem;
+  border: none;
+  border-radius: 100px;
+  cursor: pointer;
+  box-shadow: 0 4px 24px rgba(79,142,255,.4), 0 0 0 1px rgba(255,255,255,.1);
+  transition: all .2s;
+  letter-spacing: 0.02em;
+}
+
+.btn-print:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 32px rgba(79,142,255,.55), 0 0 0 1px rgba(255,255,255,.15);
+}
+
+.btn-print:active { transform: translateY(0); }
+
+.btn-print svg { width: 18px; height: 18px; }
+
+
+
+  @media print {
+    body { padding: 1cm; }
+    .reponse, .reponse.lg, .reponse.xl { background: white; }
+  }
+</style>
+</head>
+<body>
+
+<!-- EN-TÊTE -->
+<table class="header-table">
+  <tr>
+    <td class="title-cell" colspan="2">
+      TP Numérisation — Poids informatique du texte
+@ F.Rouillé - 2026
+
+    </td>
+  </tr>
+  <tr>
+    <td class="info" width="50%">
+      <span class="field-label">Nom — Prénom</span>
+    <textarea  placeholder="Écrivez votre nom et prénom ici..."></textarea>
+    </td>
+    <td width="50%">
+      <span class="field-label">Classe &nbsp;&nbsp;&nbsp; Date</span>
+     <textarea  placeholder="Indiquez votre classe ici..."></textarea>
+    </td>
+  </tr>
+</table>
+
+<h1>
+  Combien d'octets pèse une phrase ?
+  <span class="sub">Terminale — Enseignement Scientifique — Chapitre : Numérisation</span>
+</h1>
+
+<!-- OBJECTIF -->
+<div class="objectif">
+  <strong>Objectifs du TP :</strong><br>
+  — Comprendre comment un ordinateur représente du texte sous forme de nombres binaires.<br>
+  — Calculer le poids d'une phrase en bits et en octets selon l'encodage choisi.<br>
+  — Comprendre l'impact de l'ajout d'informations de couleur sur le poids du texte.
+</div>
+
+<!-- ============================
+     PARTIE 1
+     ============================ -->
+<div class="part-sep">Partie 1 — Ce que l'ordinateur « voit »</div>
+
+<h2>1. De l'humain à la machine</h2>
+
+<p>Quand vous tapez la lettre <strong>A</strong> sur votre clavier, l'ordinateur ne stocke pas la forme de la lettre : il stocke un <em>nombre</em>. Ce nombre est ensuite converti en <em>binaire</em> (suite de 0 et de 1) pour être mémorisé.</p>
+
+<div class="rappel">
+  <div class="rappel-title">📌 Rappel — Binaire</div>
+  Le binaire n'utilise que deux chiffres : <strong>0</strong> et <strong>1</strong>. Chaque chiffre binaire s'appelle un <strong>bit</strong>. Un groupe de 8 bits s'appelle un <strong>octet</strong>.
+  <br>Exemple : la lettre « A » vaut 65 en décimal, soit <code>1000001</code> en binaire (7 bits).
+</div>
+
+<h3>Q1 — Conversion rapide</h3>
+
+<p>
+  <span class="q-num">a</span>
+  Combien de valeurs différentes peut-on coder avec <strong>1 bit</strong> ? (0 ou 1, donc …)
+</p>
+<div class="reponse"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">b</span>
+  Combien de valeurs différentes peut-on coder avec <strong>7 bits</strong> ? (Formule : 2<sup>7</sup> = …)
+</p>
+<div class="reponse"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">c</span>
+  Complétez : avec <strong>8 bits</strong>, on peut représenter 2<sup>8</sup> = ……… valeurs différentes.
+</p>
+<div class="reponse"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<!-- ============================
+     PARTIE 2
+     ============================ -->
+<div class="part-sep">Partie 2 — Les encodages du texte</div>
+
+<h2>2. L'encodage : la convention de traduction</h2>
+
+<p>Pour que tout le monde soit d'accord sur quel nombre correspond à quelle lettre, on utilise des <strong>tables d'encodage</strong>. Il en existe plusieurs :</p>
+
+<table>
+  <tr>
+    <th>Encodage</th>
+    <th>Année</th>
+    <th>Bits/caractère</th>
+    <th>Nb de symboles</th>
+    <th>Accents ?</th>
+  </tr>
+  <tr>
+    <td><span class="chip">ASCII</span></td>
+    <td>1963</td>
+    <td>7 bits</td>
+    <td>128</td>
+    <td>❌ Non</td>
+  </tr>
+  <tr>
+    <td><span class="chip">Latin-1</span></td>
+    <td>1987</td>
+    <td>8 bits</td>
+    <td>256</td>
+    <td>✅ Oui (Europe)</td>
+  </tr>
+  <tr>
+    <td><span class="chip">UTF-8</span></td>
+    <td>1993</td>
+    <td>8 à 32 bits</td>
+    <td>&gt; 1 million</td>
+    <td>✅ Oui + emojis</td>
+  </tr>
+  <tr>
+    <td><span class="chip">UTF-16</span></td>
+    <td>1996</td>
+    <td>16 bits min.</td>
+    <td>&gt; 1 million</td>
+    <td>✅ Oui + tout</td>
+  </tr>
+</table>
+
+<div class="attention">
+  En ASCII, seuls les caractères sans accent sont disponibles. La lettre <strong>é</strong> n'existe pas en ASCII !
+</div>
+
+<h3>Q2 — Comprendre les encodages</h3>
+
+<p>
+  <span class="q-num">a</span>
+  Pourquoi l'ASCII ne peut-il coder que 128 symboles ?
+</p>
+<div class="reponse lg"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">b</span>
+  Avec 8 bits (Latin-1), combien de symboles différents peut-on représenter ?
+</p>
+<div class="reponse"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">c</span>
+  Quel encodage utiliseriez-vous pour écrire un texte en français avec des accents en utilisant le moins de mémoire possible ? Justifiez.
+</p>
+<div class="reponse lg"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<!-- ============================
+     PARTIE 3
+     ============================ -->
+<div class="part-sep">Partie 3 — Calcul du poids d'un texte</div>
+
+<h2>3. La formule fondamentale</h2>
+
+<div class="formule">
+  Poids (en bits) = nombre_de_caractères × bits_par_caractère<br>
+  <span class="comment">// Pour convertir en octets : Poids (octets) = Poids (bits) ÷ 8</span>
+</div>
+
+<div class="rappel">
+  <div class="rappel-title">📌 Exemple guidé</div>
+  Phrase : <strong>« Bonjour »</strong> (8 caractères, encodage Latin-1 = 8 bits/caractère)<br>
+  → Poids = 8 × 8 = <strong>64 bits</strong> = 64 ÷ 8 = <strong>8 octets</strong>
+</div>
+
+<h3>Q3 — Calculs à la main</h3>
+
+<p>Choisissez une phrase de votre choix (entre 10 et 30 caractères, sans accent d'abord).</p>
+
+<p>
+  <span class="q-num">Phrase</span>
+  Écrivez votre phrase choisie :
+</p>
+<div class="reponse lg"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">a</span>
+  Comptez le nombre de caractères (espaces et ponctuation compris) :
+</p>
+<div class="reponse"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">b</span>
+  Calculez le poids en bits et en octets pour chaque encodage. Complétez le tableau :
+</p>
+
+<table>
+  <tr>
+    <th>Encodage</th>
+    <th>Bits/caractère</th>
+    <th>Poids en bits</th>
+    <th>Poids en octets</th>
+  </tr>
+  <tr>
+    <td>ASCII</td>
+    <td>7</td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+  </tr>
+  <tr>
+    <td>Latin-1</td>
+    <td>8</td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+  </tr>
+  <tr>
+    <td>UTF-8</td>
+    <td>8</td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+  </tr>
+  <tr>
+    <td>UTF-16</td>
+    <td>16</td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+  </tr>
+</table>
+
+<p>
+  <span class="q-num">c</span>
+  Quel encodage produit le fichier le plus lourd ? Quel est le rapport entre le plus lourd et le plus léger ?
+</p>
+<div class="reponse lg"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<!-- ============================
+     PARTIE 4 — APPLICATION
+     ============================ -->
+<div class="part-sep">Partie 4 — Vérification avec l'application</div>
+
+<h2>4. Utilisation de l'application interactive</h2>
+
+<p>Ouvrez le fichier <strong><code>app_poids_texte.html</code></strong> dans votre navigateur.</p>
+
+<h3>Q4 — Prise en main</h3>
+
+<p>
+  <span class="q-num">a</span>
+  Entrez votre phrase de la question Q3 dans l'application. Sélectionnez l'encodage <strong>Latin-1</strong>. L'application donne-t-elle le même résultat que votre calcul ? Notez les valeurs :
+</p>
+<div class="reponse"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">b</span>
+  Maintenant, modifiez votre phrase pour y ajouter un accent (ex : remplacez « e » par « é »). Passez en encodage <strong>ASCII</strong>. Que remarquez-vous ? Expliquez.
+</p>
+<div class="reponse lg"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">c</span>
+  Regardez la visualisation binaire dans l'application (la grille de carrés verts et gris). Chaque carré représente un bit. Que représente chaque colonne de carrés ?
+</p>
+<div class="reponse lg"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<!-- ============================
+     PARTIE 5 — COULEUR
+     ============================ -->
+<div class="part-sep">Partie 5 — Ajouter de la couleur</div>
+
+<h2>5. Stocker la couleur de chaque caractère</h2>
+
+<p>Dans certains logiciels (traitement de texte, éditeur de code…), chaque caractère peut avoir sa propre couleur. Pour stocker cette information, il faut des bits supplémentaires par caractère.</p>
+
+<div class="rappel">
+  <div class="rappel-title">📌 Palette de couleurs</div>
+  Pour stocker une couleur parmi N couleurs possibles, il faut <strong>log<sub>2</sub>(N)</strong> bits.<br>
+  Exemples :
+  <ul style="margin:0.3rem 0 0 1.2rem;">
+    <li>8 couleurs → 3 bits (car 2<sup>3</sup> = 8)</li>
+    <li>256 couleurs → 8 bits (car 2<sup>8</sup> = 256)</li>
+    <li>65 536 couleurs → 16 bits (car 2<sup>16</sup> = 65 536)</li>
+    <li>16 777 216 couleurs (24 bits) → 24 bits (c'est la norme actuelle)</li>
+  </ul>
+</div>
+
+<h3>Q5 — Calculs avec couleur</h3>
+
+<p>
+  <span class="q-num">a</span>
+  Si on ajoute une couleur parmi 256 possibles à chaque caractère, combien de bits supplémentaires faut-il par caractère ?
+</p>
+<div class="reponse"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">b</span>
+  La nouvelle formule devient :
+</p>
+<div class="formule">
+  Poids = nb_caractères × (bits_texte + bits_couleur)
+</div>
+
+<p>Reprenez votre phrase de Q3, encodage Latin-1, et complétez ce tableau :</p>
+
+<table>
+  <tr>
+    <th>Palette</th>
+    <th>Bits couleur</th>
+    <th>Total bits/car.</th>
+    <th>Poids total (bits)</th>
+    <th>Poids total (octets)</th>
+  </tr>
+  <tr>
+    <td>Sans couleur</td>
+    <td>0</td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+  </tr>
+  <tr>
+    <td>8 couleurs</td>
+    <td>3</td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+  </tr>
+  <tr>
+    <td>256 couleurs</td>
+    <td>8</td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+  </tr>
+  <tr>
+    <td>24 bits (réel)</td>
+    <td>24</td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+    <td class="cell-answer"><input class="table-input" type="text" placeholder="…"></td>
+  </tr>
+</table>
+
+<h3>Q6 — Vérification avec l'application</h3>
+
+<p>
+  <span class="q-num">a</span>
+  Dans l'application, activez le bouton <em>« Ajouter une couleur »</em>. Sélectionnez <strong>256 couleurs</strong>. Vos calculs du tableau sont-ils confirmés ?
+</p>
+<div class="reponse"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">b</span>
+  Observez la visualisation binaire : les carrés orange représentent les bits de couleur. Combien en comptez-vous par caractère ? Est-ce cohérent ?
+</p>
+<div class="reponse lg"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<!-- ============================
+     PARTIE 6 — SYNTHÈSE
+     ============================ -->
+<div class="part-sep">Partie 6 — Synthèse et mise en perspective</div>
+
+<h2>6. Ce que cela signifie concrètement</h2>
+
+<h3>Q7 — Ordres de grandeur</h3>
+
+<p>
+  <span class="q-num">a</span>
+  Un roman fait environ 600 000 caractères. En UTF-8, sans couleur, quel est son poids approximatif en Ko ?
+  <br><small>(Rappel : 1 Ko = 1024 octets ≈ 1000 octets)</small>
+</p>
+<div class="reponse lg"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">b</span>
+  Le même roman, avec une couleur 24 bits par caractère — quel est son poids ? Comparez avec la réponse précédente.
+</p>
+<div class="reponse lg"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<p>
+  <span class="q-num">c</span>
+  Une page web contient en moyenne 3 000 caractères de texte. Un site a 10 000 pages. Estimez le poids total du texte de ce site (UTF-8, sans couleur) en Mo.
+</p>
+<div class="reponse lg"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<h3>Q8 — Question ouverte</h3>
+
+<p>
+  <span class="q-num"></span>
+  Un fichier texte (.txt) et un fichier Word (.docx) contenant la même phrase ont des poids très différents. En vous appuyant sur ce que vous avez appris, expliquez pourquoi le fichier Word est beaucoup plus lourd.
+</p>
+<div class="reponse xl"><textarea  placeholder="Écrivez vos réponses ici..."></textarea></div>
+
+<!-- BILAN -->
+<div class="bilan">
+  <h2>📋 Bilan à compléter</h2>
+  <p>Complétez les phrases suivantes :</p>
+  <ul style="line-height:2.2; margin-left:1.2rem;">
+    <li>Le poids d'un texte dépend de son nombre de caractères et de <input class="table-input" type="text" placeholder="…"> utilisé.</li>
+    <li>L'encodage ASCII utilise <input class="table-input" type="text" placeholder="…"> bits par caractère, ce qui limite à <input class="table-input" type="text" placeholder="…"> symboles possibles.</li>
+    <li>Ajouter une couleur parmi 256 à chaque caractère augmente le poids de <input class="table-input" type="text" placeholder="…"> bits par caractère.</li>
+    <li>Pour convertir des bits en octets, on divise par <input class="table-input" type="text" placeholder="…">.</li>
+    <li>L'encodage standard du web aujourd'hui est <input class="table-input" type="text" placeholder="…">.</li>
+  </ul>
+</div>
+
+<!-- ===== BOUTON IMPRIMER ===== -->
+  <div class="print-bar">
+    <button class="btn-print" onclick="window.print()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <polyline points="6 9 6 2 18 2 18 9"/>
+        <path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/>
+        <rect x="6" y="14" width="12" height="8"/>
+      </svg>
+      Imprimer / Enregistrer en PDF
+    </button>
+  </div>
+
+<footer>
+  Terminale — Enseignement Scientifique — Numérisation &nbsp;|&nbsp; Document pédagogique
+</footer>
+
+</body>
+</html>

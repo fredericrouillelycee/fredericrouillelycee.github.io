@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sujet TP - Création d'un modérateur IA (classification de texte)</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(145deg, #f0f4f8 0%, #e6ecf4 100%);
+            padding: 30px 20px;
+        }
+        
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+        }
+        
+        /* Sujet */
+        .sujet-card {
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .sujet-header {
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            color: white;
+            padding: 40px 50px;
+        }
+        
+        .sujet-header h1 {
+            font-size: 2.8rem;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .sujet-header .mission {
+            font-size: 1.3rem;
+            color: #b0c4de;
+            border-left: 4px solid #3b82f6;
+            padding-left: 25px;
+            margin-top: 20px;
+        }
+        
+        .objectifs {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            background: #f1f5f9;
+            padding: 25px 50px;
+            border-bottom: 1px solid #cbd5e1;
+        }
+        
+        .objectif-item {
+            flex: 1 1 200px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .objectif-icon {
+            background: #0f172a;
+            color: white;
+            width: 48px;
+            height: 48px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+        
+        .partie {
+            padding: 40px 50px;
+            border-bottom: 2px dashed #cbd5e1;
+        }
+        
+        .partie:last-of-type {
+            border-bottom: none;
+        }
+        
+        .partie-header {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .partie-numero {
+            background: #0f172a;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 700;
+        }
+        
+        .partie-titre {
+            font-size: 2rem;
+            font-weight: 600;
+            color: #0f172a;
+        }
+        
+        .partie-temps {
+            background: #f1f5f9;
+            border-radius: 40px;
+            padding: 8px 20px;
+            font-weight: 500;
+            color: #334155;
+            margin-left: auto;
+        }
+        
+        .etape {
+            background: #f8fafc;
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .etape h4 {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 1.4rem;
+            color: #0f172a;
+            margin-bottom: 20px;
+        }
+        
+        .etape h4 .pastille {
+            background: #3b82f6;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 20px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1rem;
+            font-weight: 600;
+        }
+        
+        .instructions {
+            padding-left: 45px;
+        }
+        
+        .instructions p {
+            margin-bottom: 15px;
+            font-size: 1.1rem;
+            color: #1e293b;
+        }
+        
+        .instructions ul, .instructions ol {
+            margin-bottom: 20px;
+            padding-left: 25px;
+        }
+        
+        .instructions li {
+            margin-bottom: 10px;
+            font-size: 1.05rem;
+        }
+        
+        .encadre-important {
+            background: #fff7ed;
+            border-left: 8px solid #f97316;
+            padding: 20px 25px;
+            border-radius: 18px;
+            margin: 25px 0;
+        }
+        
+        /* Simulateur */
+        .simulateur-card {
+            background: white;
+            border-radius: 40px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+        
+        .simulateur-header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+            padding: 25px 40px;
+        }
+        
+        .simulateur-header h2 {
+            font-size: 2rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .simulateur-body {
+            padding: 30px 40px;
+        }
+        
+        .row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+        
+        .col {
+            flex: 1 1 400px;
+        }
+        
+        .section {
+            background: #f8f9fa;
+            border-radius: 24px;
+            padding: 25px;
+            margin-bottom: 30px;
+            border: 1px solid #e9ecef;
+        }
+        
+        .section h3 {
+            color: #1a1a2e;
+            margin-bottom: 20px;
+            font-size: 1.5rem;
+        }
+        
+        .input-group {
+            margin-bottom: 20px;
+        }
+        
+        .input-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+        
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 1rem;
+            transition: 0.2s;
+            font-family: inherit;
+        }
+        
+        textarea:focus, input:focus {
+            border-color: #667eea;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(102,126,234,0.2);
+        }
+        
+        .btn {
+            background: #1a1a2e;
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 40px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .btn:hover {
+            background: #2d3748;
+            transform: scale(1.02);
+        }
+        
+        .btn-primary {
+            background: #667eea;
+        }
+        
+        .btn-primary:hover {
+            background: #5a67d8;
+        }
+        
+        .example-box {
+            background: #e6f0ff;
+            border-left: 6px solid #667eea;
+            padding: 20px;
+            border-radius: 16px;
+            margin: 20px 0;
+        }
+        
+        .result-box {
+            background: #1a1a2e;
+            color: white;
+            padding: 25px;
+            border-radius: 24px;
+            margin: 20px 0;
+        }
+        
+        .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 0;
+            border-bottom: 1px solid #4a5568;
+        }
+        
+        .probability-bar {
+            height: 30px;
+            background: #4a5568;
+            border-radius: 15px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .bar-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            color: white;
+            line-height: 30px;
+            padding-left: 15px;
+            font-weight: 600;
+        }
+        
+        .dataset-stats {
+            display: flex;
+            gap: 20px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+        
+        .stat-card {
+            background: white;
+            border-radius: 16px;
+            padding: 20px;
+            flex: 1;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #1a1a2e;
+        }
+        
+        .phrase-list {
+            max-height: 200px;
+            overflow-y: auto;
+            background: white;
+            border-radius: 16px;
+            padding: 15px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .phrase-item {
+            padding: 8px;
+            border-bottom: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .phrase-item:last-child {
+            border-bottom: none;
+        }
+        
+        .tag {
+            padding: 4px 12px;
+            border-radius: 30px;
+            font-size: 0.85rem;
+            font-weight: 600;
+        }
+        
+        .tag-publier {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        
+        .tag-moderer {
+            background: #fef3c7;
+            color: #92400e;
+        }
+        
+        .import-area {
+            margin: 20px 0;
+            background: #f1f5f9;
+            border-radius: 16px;
+            padding: 20px;
+        }
+        
+        .import-area textarea {
+            height: 120px;
+            font-size: 0.95rem;
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #64748b;
+        }
+    </style>
+</head>
+<body>
+    <div class="main-container">
+        <!-- SUJET DU TP -->
+        <div class="sujet-card">
+            <div class="sujet-header">
+                <h1>
+                    <span><img src="logo4.png" alt="Icône Robot" width="150" height="150"></span>Créez votre modérateur de commentaires IA
+                </h1>
+                <div class="mission">
+                    @ F.Rouillé - 2026 
+                </div>
+            </div>
+            
+            <div class="objectifs">
+                <div class="objectif-item">
+                    <div class="objectif-icon">1</div>
+                    <div class="objectif-text">Comprendre l'apprentissage supervisé</div>
+                </div>
+                <div class="objectif-item">
+                    <div class="objectif-icon">2</div>
+                    <div class="objectif-text">Distinguer données d'entraînement / test</div>
+                </div>
+                <div class="objectif-item">
+                    <div class="objectif-icon">3</div>
+                    <div class="objectif-text">Identifier l'importance des données</div>
+                </div>
+                <div class="objectif-item">
+                    <div class="objectif-icon">4</div>
+                    <div class="objectif-text">Diagnostiquer un biais</div>
+                </div>
+            </div>
+            
+            <!-- PARTIE 1 -->
+            <div class="partie">
+                <div class="partie-header">
+                    <div class="partie-numero">1</div>
+                    <div class="partie-titre">Préparation et collecte des données</div>
+                    <div class="partie-temps">⏱️ 15 min</div>
+                </div>
+                
+                <div class="etape">
+                    <h4><span class="pastille">A</span> Découvrir l'interface du simulateur</h4>
+                    <div class="instructions">
+                        <p>Vous allez utiliser un simulateur de classification de texte (basé sur l'algorithme Naïve Bayes). Il se trouve <strong>plus bas dans cette page</strong>.</p>
+                        <p>Dans ce simulateur, vous pouvez :</p>
+                        <ul>
+                            <li>Ajouter des phrases dans deux catégories : <span class="tag tag-publier">PUBLIER</span> (commentaires acceptables) et <span class="tag tag-moderer">MODERER</span> (commentaires à modérer).</li>
+                            <li>Lancer l'entraînement pour que l'IA apprenne à partir de ces exemples.</li>
+                            <li>Tester de nouvelles phrases et observer les probabilités.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="etape">
+                    <h4><span class="pastille">B</span> Créer vos deux classes</h4>
+                    <div class="instructions">
+                        <p>Dans le simulateur, vous avez deux catégories :</p>
+                        <ul>
+                            <li><strong style="color:#1e40af;">🔵 PUBLIER</strong> : commentaires positifs, neutres, constructifs.</li>
+                            <li><strong style="color:#92400e;">🟡 MODERER</strong> : commentaires insultants, agressifs ou hors-sujet.</li>
+                        </ul>
+                    </div>
+                </div>
+                
+                <div class="etape">
+                    <h4><span class="pastille">C</span> Nourrir l'IA (jeu de données)</h4>
+                    <div class="instructions">
+                        <p>Ajoutez <strong>au moins 10 exemples dans chaque catégorie</strong>. Variez les formulations.</p>
+                        <p>Vous pouvez utiliser les zones d'import ci-dessous pour copier-coller une liste de phrases (une par ligne).</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PARTIE 2 -->
+            <div class="partie">
+                <div class="partie-header">
+                    <div class="partie-numero">2</div>
+                    <div class="partie-titre">Entraînement et premiers tests</div>
+                    <div class="partie-temps">⏱️ 15 min</div>
+                </div>
+                
+                <div class="etape">
+                    <h4><span class="pastille">A</span> Lancer l'entraînement</h4>
+                    <div class="instructions">
+                        <p>Cliquez sur le bouton <strong>"🚀 Entraîner l'IA"</strong> dans le simulateur.</p>
+                        <p>Observez les statistiques affichées : nombre d'exemples par catégorie, nombre de mots uniques.</p>
+                    </div>
+                </div>
+                
+                <div class="etape">
+                    <h4><span class="pastille">B</span> Tester votre IA</h4>
+                    <div class="instructions">
+                        <p>Dans la partie <strong>Test</strong> du simulateur, entrez des phrases nouvelles (jamais vues) et observez les résultats :</p>
+                        <ul>
+                            <li>"Génial, merci pour le partage"</li>
+                            <li>"Tu racontes n'importe quoi"</li>
+                            <li>"Je ne suis pas d'accord mais c'est intéressant"</li>
+                            <li>"Ta gueule"</li>
+                        </ul>
+                        <p>Notez les décisions et les probabilités. L'IA se trompe-t-elle parfois ? Pourquoi ?</p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PARTIE 3 -->
+            <div class="partie">
+                <div class="partie-header">
+                    <div class="partie-numero">3</div>
+                    <div class="partie-titre">Enquête sur les biais</div>
+                    <div class="partie-temps">⏱️ 15 min</div>
+                </div>
+                
+                <div class="etape">
+                    <h4><span class="pastille">A</span> Le problème des données déséquilibrées</h4>
+                    <div class="instructions">
+                        <p>Nous allons volontairement <strong>créer un jeu de données déséquilibré</strong> pour observer l'effet sur les décisions.</p>
+                        <ol>
+                            <li>Cliquez sur <strong>"🗑️ Tout effacer"</strong> pour repartir de zéro.</li>
+                            <li>Ajoutez <strong>20 phrases variées dans PUBLIER</strong> (vous pouvez utiliser le bouton "📋 Ajouter des exemples par défaut" puis en ajouter d'autres).</li>
+                            <li>Ajoutez <strong>seulement 3 phrases dans MODERER</strong> (par exemple : "nul", "merde", "idiot").</li>
+                            <li>Entraînez le modèle.</li>
+                        </ol>
+                    </div>
+                </div>
+                
+                <div class="etape">
+                    <h4><span class="pastille">B</span> Observez les conséquences</h4>
+                    <div class="instructions">
+                        <p>Testez maintenant la phrase : <strong>"Je trouve cette idée stupide"</strong>.</p>
+                        <p>Que répond l'IA ? Est-ce correct ? Pourquoi ?</p>
+                        <div class="encadre-important">
+                            <p><strong>❓ Question :</strong> Pourquoi l'IA a-t-elle du mal avec cette phrase ? Que faudrait-il faire pour améliorer ses performances ?</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="etape">
+                    <h4><span class="pastille">C</span> Comprendre le biais (en groupe)</h4>
+                    <div class="instructions">
+                        <p>Discutez avec votre binôme et répondez aux questions suivantes (vous les noterez sur la fiche de rendu) :</p>
+                        <ol>
+                            <li><strong>Pourquoi l'IA a-t-elle du mal avec les nouvelles insultes ?</strong></li>
+                            <li><strong>Que faudrait-il faire pour améliorer ses performances ?</strong></li>
+                            <li><strong>Imaginez qu'on ait entraîné cette IA uniquement avec des commentaires d'hommes adultes. Quel pourrait être le problème quand elle modérera un forum utilisé par des adolescents ou des femmes ?</strong></li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+            
+            <div style="padding: 20px 50px 40px; text-align: center; background: #f9fafb;">
+                <p style="font-size: 1.2rem;">➡️ Utilisez le simulateur ci-dessous pour réaliser les manipulations.</p>
+            </div>
+        </div>
+        
+        <!-- SIMULATEUR (outil) -->
+        <div class="simulateur-card" id="simulateur">
+            <div class="simulateur-header">
+                <h2>🧪 Simulateur de classification de texte (Naïve Bayes)</h2>
+            </div>
+            <div class="simulateur-body">
+                <!-- Zones d'import par copier-coller -->
+                <div class="row">
+                    <div class="col">
+                        <div class="import-area">
+                            <h4 style="margin-bottom: 10px;">📋 Importer des phrases pour PUBLIER</h4>
+                            <textarea id="importPublier" placeholder="Collez ici une phrase par ligne&#10;Ex:&#10;Super article !&#10;Je suis d'accord&#10;Merci pour l'info">Super article !
+Je suis d'accord avec toi
+Merci pour l'info
+Intéressant comme point de vue
+Excellent travail
+Bravo, continue comme ça</textarea>
+                            <button class="btn btn-primary" onclick="importFromTextarea('publier')" style="margin-top: 10px;">📥 Importer dans PUBLIER</button>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="import-area">
+                            <h4 style="margin-bottom: 10px;">📋 Importer des phrases pour MODERER</h4>
+                            <textarea id="importModerer" placeholder="Collez ici une phrase par ligne&#10;Ex:&#10;T'es nul&#10;Ferme ta bouche&#10;Article de merde">T'es nul
+Ferme ta bouche
+Article de merde
+Va te faire voir
+T'es trop bête
+Ta gueule</textarea>
+                            <button class="btn btn-primary" onclick="importFromTextarea('moderer')" style="margin-top: 10px;">📥 Importer dans MODERER</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Ajout individuel -->
+                <div class="row">
+                    <div class="col">
+                        <div class="section">
+                            <h3>🔵 Ajout manuel à PUBLIER</h3>
+                            <div class="input-group">
+                                <input type="text" id="newPublier" placeholder="Ex: Super article, merci !">
+                                <button class="btn btn-primary" onclick="addExample('publier')">➕ Ajouter</button>
+                            </div>
+                            <div>
+                                <strong>Liste PUBLIER (<span id="countPublier">0</span>)</strong>
+                                <div class="phrase-list" id="listPublier"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col">
+                        <div class="section">
+                            <h3>🟡 Ajout manuel à MODERER</h3>
+                            <div class="input-group">
+                                <input type="text" id="newModerer" placeholder="Ex: T'es nul !">
+                                <button class="btn btn-primary" onclick="addExample('moderer')">➕ Ajouter</button>
+                            </div>
+                            <div>
+                                <strong>Liste MODERER (<span id="countModerer">0</span>)</strong>
+                                <div class="phrase-list" id="listModerer"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap; margin-bottom: 20px;">
+                        <button class="btn" onclick="addPredefinedExamples()">📋 Ajouter exemples par défaut</button>
+                        <button class="btn" onclick="loadBiasedDataset()" style="background: #f97316;">⚠️ Charger dataset biaisé</button>
+                        <button class="btn" onclick="clearAll()">🗑️ Tout effacer</button>
+                    </div>
+                    
+                    <div style="text-align: center; margin: 30px 0;">
+                        <button class="btn" id="trainBtn" onclick="trainModel()" style="font-size: 1.5rem; padding: 15px 50px;">🚀 Entraîner l'IA</button>
+                    </div>
+                    
+                    <div id="trainingStatus" style="display: none;">
+                        <div class="result-box">
+                            <h3>✅ Modèle entraîné</h3>
+                            <div class="dataset-stats">
+                                <div class="stat-card">
+                                    <div class="stat-number" id="statsPublier">0</div>
+                                    <div>exemples PUBLIER</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="statsModerer">0</div>
+                                    <div>exemples MODERER</div>
+                                </div>
+                                <div class="stat-card">
+                                    <div class="stat-number" id="statsMots">0</div>
+                                    <div>mots uniques</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h3>🔍 Tester une nouvelle phrase</h3>
+                    <div class="input-group">
+                        <input type="text" id="testPhrase" placeholder="Ex: Je ne suis pas d'accord avec toi">
+                        <button class="btn btn-primary" id="testBtn" onclick="testPhrase()" disabled>🎯 Tester</button>
+                    </div>
+                    
+                    <div id="testResult" style="display: none;">
+                        <div class="result-box">
+                            <div class="result-row">
+                                <span>🔵 PUBLIER</span>
+                                <span id="probPublier">0%</span>
+                            </div>
+                            <div class="probability-bar">
+                                <div class="bar-fill" id="barPublier" style="width: 0%;">0%</div>
+                            </div>
+                            <div class="result-row">
+                                <span>🟡 MODERER</span>
+                                <span id="probModerer">0%</span>
+                            </div>
+                            <div class="probability-bar">
+                                <div class="bar-fill" id="barModerer" style="width: 0%; background: #f97316;">0%</div>
+                            </div>
+                            <div style="margin-top: 20px; padding: 15px; background: #2d3748; border-radius: 12px; text-align: center;">
+                                <strong id="finalDecision">Décision : </strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div id="wordAnalysis" style="margin-top: 30px; display: none;">
+                        <h4>🔤 Mots influents :</h4>
+                        <div class="phrase-list" id="wordList" style="max-height: 150px;"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="footer">
+            Sujet TP - Classification de texte (Naïve Bayes) - Adapté de l'activité "Modérateur de commentaires IA"
+        </div>
+    </div>
+    
+    <script>
+        // ==================== DONNÉES ====================
+        let trainingData = {
+            publier: [],
+            moderer: []
+        };
+        
+        let model = null;
+        
+        // ==================== FONCTIONS D'IMPORT ====================
+        function importFromTextarea(category) {
+            const textarea = document.getElementById(category === 'publier' ? 'importPublier' : 'importModerer');
+            const raw = textarea.value;
+            const lines = raw.split(/\n/);
+            const phrases = lines
+                .map(line => line.trim())
+                .filter(line => line.length > 0);
+            
+            if (phrases.length === 0) {
+                alert("Aucune phrase valide à importer.");
+                return;
+            }
+            
+            // Ajouter chaque phrase
+            phrases.forEach(phrase => trainingData[category].push(phrase));
+            
+            // Mise à jour de l'interface
+            updateLists();
+            document.getElementById('testBtn').disabled = true;
+            document.getElementById('trainingStatus').style.display = 'none';
+            
+            alert(`${phrases.length} phrase(s) importée(s) dans ${category === 'publier' ? 'PUBLIER' : 'MODERER'}.`);
+        }
+        
+        // ==================== FONCTIONS D'AJOUT ====================
+        function addExample(category) {
+            const input = category === 'publier' ? document.getElementById('newPublier') : document.getElementById('newModerer');
+            const text = input.value.trim();
+            if (text === '') return alert('Veuillez entrer une phrase.');
+            trainingData[category].push(text);
+            input.value = '';
+            updateLists();
+            document.getElementById('testBtn').disabled = true;
+            document.getElementById('trainingStatus').style.display = 'none';
+        }
+        
+        function removeExample(category, index) {
+            trainingData[category].splice(index, 1);
+            updateLists();
+            document.getElementById('testBtn').disabled = true;
+            document.getElementById('trainingStatus').style.display = 'none';
+        }
+        
+        function updateLists() {
+            document.getElementById('countPublier').textContent = trainingData.publier.length;
+            document.getElementById('countModerer').textContent = trainingData.moderer.length;
+            
+            const listPublier = document.getElementById('listPublier');
+            listPublier.innerHTML = '';
+            trainingData.publier.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'phrase-item';
+                div.innerHTML = `<span>${p}</span><span class="tag tag-publier" onclick="removeExample('publier', ${i})" style="cursor:pointer;">🗑️</span>`;
+                listPublier.appendChild(div);
+            });
+            
+            const listModerer = document.getElementById('listModerer');
+            listModerer.innerHTML = '';
+            trainingData.moderer.forEach((p, i) => {
+                const div = document.createElement('div');
+                div.className = 'phrase-item';
+                div.innerHTML = `<span>${p}</span><span class="tag tag-moderer" onclick="removeExample('moderer', ${i})" style="cursor:pointer;">🗑️</span>`;
+                listModerer.appendChild(div);
+            });
+        }
+        
+        function clearAll() {
+            trainingData = { publier: [], moderer: [] };
+            updateLists();
+            document.getElementById('testBtn').disabled = true;
+            document.getElementById('trainingStatus').style.display = 'none';
+            document.getElementById('testResult').style.display = 'none';
+            document.getElementById('wordAnalysis').style.display = 'none';
+        }
+        
+        function addPredefinedExamples() {
+            trainingData.publier = [
+                "Super article !",
+                "Je suis d'accord avec toi",
+                "Merci pour l'info",
+                "Intéressant comme point de vue",
+                "Excellent travail",
+                "Bravo, continue comme ça"
+            ];
+            trainingData.moderer = [
+                "T'es nul",
+                "Ferme ta bouche",
+                "Article de merde",
+                "Va te faire voir",
+                "T'es trop bête",
+                "Ta gueule"
+            ];
+            updateLists();
+            document.getElementById('testBtn').disabled = true;
+            document.getElementById('trainingStatus').style.display = 'none';
+        }
+        
+        function loadBiasedDataset() {
+            trainingData.publier = [];
+            for (let i = 0; i < 20; i++) {
+                trainingData.publier.push(`Phase positive numéro ${i+1}`);
+            }
+            trainingData.moderer = ["T'es nul", "Va te faire voir", "Ferme-la"];
+            updateLists();
+            document.getElementById('testBtn').disabled = true;
+            document.getElementById('trainingStatus').style.display = 'none';
+            alert("Dataset biaisé chargé : 20 PUBLIER, 3 MODERER. Entraînez puis testez 'Je trouve cette idée stupide'.");
+        }
+        
+        // ==================== ENTRAÎNEMENT ====================
+        function trainModel() {
+            if (trainingData.publier.length === 0 || trainingData.moderer.length === 0) {
+                return alert("Il faut au moins un exemple dans chaque catégorie.");
+            }
+            
+            const wordCounts = { publier: {}, moderer: {} };
+            
+            function tokenize(text) {
+                return text.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 1);
+            }
+            
+            trainingData.publier.forEach(phrase => {
+                tokenize(phrase).forEach(w => wordCounts.publier[w] = (wordCounts.publier[w] || 0) + 1);
+            });
+            trainingData.moderer.forEach(phrase => {
+                tokenize(phrase).forEach(w => wordCounts.moderer[w] = (wordCounts.moderer[w] || 0) + 1);
+            });
+            
+            const allWords = new Set([...Object.keys(wordCounts.publier), ...Object.keys(wordCounts.moderer)]);
+            
+            model = {
+                wordCounts,
+                allWords: Array.from(allWords),
+                totalPublier: trainingData.publier.length,
+                totalModerer: trainingData.moderer.length,
+                vocabSize: allWords.size,
+                totalWordsPublier: Object.values(wordCounts.publier).reduce((a,b) => a+b, 0),
+                totalWordsModerer: Object.values(wordCounts.moderer).reduce((a,b) => a+b, 0)
+            };
+            
+            document.getElementById('statsPublier').textContent = model.totalPublier;
+            document.getElementById('statsModerer').textContent = model.totalModerer;
+            document.getElementById('statsMots').textContent = model.vocabSize;
+            document.getElementById('trainingStatus').style.display = 'block';
+            document.getElementById('testBtn').disabled = false;
+            document.getElementById('testResult').style.display = 'none';
+        }
+        
+        // ==================== TEST ====================
+        function testPhrase() {
+            if (!model) return alert("Entraînez d'abord le modèle !");
+            
+            const phrase = document.getElementById('testPhrase').value.trim();
+            if (!phrase) return alert("Entrez une phrase.");
+            
+            function tokenize(text) {
+                return text.toLowerCase().replace(/[^\w\s]/g, '').split(/\s+/).filter(w => w.length > 1);
+            }
+            
+            const words = tokenize(phrase);
+            
+            const priorPublier = Math.log(model.totalPublier / (model.totalPublier + model.totalModerer));
+            const priorModerer = Math.log(model.totalModerer / (model.totalPublier + model.totalModerer));
+            
+            let logPublier = priorPublier;
+            let logModerer = priorModerer;
+            const wordInfluence = [];
+            
+            words.forEach(word => {
+                const countP = model.wordCounts.publier[word] || 0;
+                const countM = model.wordCounts.moderer[word] || 0;
+                const probP = Math.log((countP + 1) / (model.totalWordsPublier + model.vocabSize));
+                const probM = Math.log((countM + 1) / (model.totalWordsModerer + model.vocabSize));
+                logPublier += probP;
+                logModerer += probM;
+                if (countP > 0 || countM > 0) {
+                    wordInfluence.push({ word, publier: countP, moderer: countM });
+                }
+            });
+            
+            const maxLog = Math.max(logPublier, logModerer);
+            const expP = Math.exp(logPublier - maxLog);
+            const expM = Math.exp(logModerer - maxLog);
+            const sum = expP + expM;
+            const probPublier = expP / sum;
+            const probModerer = expM / sum;
+            
+            document.getElementById('probPublier').textContent = (probPublier * 100).toFixed(1) + '%';
+            document.getElementById('probModerer').textContent = (probModerer * 100).toFixed(1) + '%';
+            document.getElementById('barPublier').style.width = (probPublier * 100) + '%';
+            document.getElementById('barPublier').textContent = (probPublier * 100).toFixed(1) + '%';
+            document.getElementById('barModerer').style.width = (probModerer * 100) + '%';
+            document.getElementById('barModerer').textContent = (probModerer * 100).toFixed(1) + '%';
+            
+            const decision = probPublier > probModerer ? "🔵 PUBLIER" : "🟡 MODERER";
+            document.getElementById('finalDecision').innerHTML = `<strong>Décision : ${decision}</strong>`;
+            document.getElementById('testResult').style.display = 'block';
+            
+            // Mots influents
+            const wordList = document.getElementById('wordList');
+            wordList.innerHTML = '';
+            wordInfluence.sort((a,b) => {
+                const infA = Math.abs((a.publier+1)/(model.totalWordsPublier+model.vocabSize) - (a.moderer+1)/(model.totalWordsModerer+model.vocabSize));
+                const infB = Math.abs((b.publier+1)/(model.totalWordsPublier+model.vocabSize) - (b.moderer+1)/(model.totalWordsModerer+model.vocabSize));
+                return infB - infA;
+            }).slice(0,5).forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'phrase-item';
+                div.innerHTML = `<span><strong>"${item.word}"</strong></span><span><span class="tag tag-publier">${item.publier}x</span> <span class="tag tag-moderer">${item.moderer}x</span></span>`;
+                wordList.appendChild(div);
+            });
+            document.getElementById('wordAnalysis').style.display = 'block';
+        }
+        
+        // Initialisation
+        updateLists();
+    </script>
+</body>
+</html>

@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>Modération par l'IA</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+body{
+    font-family: Arial;
+    background: linear-gradient(135deg,#dbeafe,#bfdbfe);
+    text-align:center;
+    color:#0f172a;
+}
+
+h1{ color:#1e3a8a; }
+h2{ color:#2563eb; }
+h3{ color:#1e40af; }
+
+textarea{
+    width:40%;
+    height:150px;
+    margin:10px;
+    padding:10px;
+    border-radius:8px;
+    border:2px solid #3b82f6;
+}
+
+button{
+    padding:10px 20px;
+    margin:10px;
+    border:none;
+    border-radius:8px;
+    background:#2563eb;
+    color:white;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+button:hover{
+    background:#1d4ed8;
+}
+
+input[type=range]{
+    width:200px;
+}
+
+#confusion{
+    margin-top:20px;
+}
+
+canvas{
+    background:white;
+    margin-top:20px;
+    border-radius:8px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Modération par l'IA</h1>
+<h2>par F.Rouillé  @ 2026</h2>
+<h2>avec l'utilisation de TensorFlow.js pour les modèles embarqués</h2>
+<h3>version 3.0 pour l'enseignement scientifique en terminale</h3>
+
+<hr>
+
+<h3>Dataset Positif</h3>
+<textarea id="positiveData" placeholder="Coller ici les lignes positives..."></textarea>
+
+<h3>Dataset Négatif</h3>
+<textarea id="negativeData" placeholder="Coller ici les lignes négatives..."></textarea>
+
+<br>
+<button onclick="prepareDataset()">Entraîner le modèle</button>
+<button onclick="showWeights()">Afficher poids du réseau</button>
+<div id="weightsDisplay"></div>
+<hr>
+
+<h3>Tester un commentaire</h3>
+<input id="inputText" placeholder="Entrer un commentaire">
+<button onclick="predict()">Analyser</button>
+
+<h3 id="result"></h3>
+
+<hr>
+
+<label>
+<input type="checkbox" id="showMatrix" onchange="toggleMatrix()">
+Afficher la matrice de confusion
+</label>
+
+<br>
+
+<label>
+<input type="checkbox" id="useThreshold">
+Activer seuil de toxicité
+</label>
+
+<br>
+Seuil :
+<input type="range" id="threshold" min="0" max="1" step="0.05" value="0.5">
+<span id="thresholdValue">0.5</span>
+
+<div id="confusion" style="display:none;"></div>
+
+<canvas id="chart" width="400" height="200"></canvas>
+
+<script>
+
+let vocab=[];
+let dataset=[];
+let model;
+
+document.getElementById("threshold").oninput=function(){
+    document.getElementById("thresholdValue").innerText=this.value;
+};
+
+function prepareDataset(){
+
+    dataset=[];
+    vocab=[];
+
+    const positives=document.getElementById("positiveData").value.split("\n");
+    const negatives=document.getElementById("negativeData").value.split("\n");
+
+    positives.forEach(line=>{
+        if(line.trim()!=""){
+            dataset.push({text:line.trim(),label:"positive"});
+        }
+    });
+
+    negatives.forEach(line=>{
+        if(line.trim()!=""){
+            dataset.push({text:line.trim(),label:"negative"});
+        }
+    });
+
+    dataset.forEach(d=>{
+        d.text.split(" ").forEach(w=>{
+            if(!vocab.includes(w)) vocab.push(w);
+        });
+    });
+
+    train();
+}
+
+function vectorize(text){
+    let arr=new Array(vocab.length).fill(0);
+    text.split(" ").forEach(w=>{
+        let i=vocab.indexOf(w);
+        if(i>=0) arr[i]=1;
+    });
+    return arr;
+}
+
+async function train(){
+
+    model=tf.sequential();
+    model.add(tf.layers.dense({units:16,inputShape:[vocab.length],activation:'relu'}));
+    model.add(tf.layers.dense({units:2,activation:'softmax'}));
+    model.compile({optimizer:'adam',loss:'categoricalCrossentropy'});
+
+    const xs=tf.tensor2d(dataset.map(d=>vectorize(d.text)));
+    const ys=tf.tensor2d(dataset.map(d=> d.label==="positive"?[1,0]:[0,1]));
+
+    await model.fit(xs,ys,{epochs:40});
+
+    evaluate();
+}
+
+function predict(){
+
+    const text=document.getElementById("inputText").value;
+    const input=tf.tensor2d([vectorize(text)]);
+    const prediction=model.predict(input);
+    const probs=prediction.dataSync();
+
+    let thresholdActive=document.getElementById("useThreshold").checked;
+    let threshold=parseFloat(document.getElementById("threshold").value);
+
+    let label;
+
+    if(thresholdActive){
+        label = probs[1] > threshold ? "negative" : "positive";
+    } else {
+        label = probs[0] > probs[1] ? "positive" : "negative";
+    }
+
+    document.getElementById("result").innerText=
+        "Positif: "+probs[0].toFixed(2)+
+        " | Négatif: "+probs[1].toFixed(2)+
+        " → Prédiction: "+label;
+}
+
+function evaluate(){
+
+    let tp=0,tn=0,fp=0,fn=0;
+
+    dataset.forEach(d=>{
+        const input=tf.tensor2d([vectorize(d.text)]);
+        const prediction=model.predict(input);
+        const probs=prediction.dataSync();
+        const pred=probs[0]>probs[1]?"positive":"negative";
+
+        if(d.label==="positive" && pred==="positive") tp++;
+        if(d.label==="negative" && pred==="negative") tn++;
+        if(d.label==="negative" && pred==="positive") fp++;
+        if(d.label==="positive" && pred==="negative") fn++;
+    });
+
+    updateMatrix(tp,tn,fp,fn);
+    updateChart(tp,tn,fp,fn);
+}
+
+function toggleMatrix(){
+    document.getElementById("confusion").style.display=
+        document.getElementById("showMatrix").checked?"block":"none";
+}
+
+function updateMatrix(tp,tn,fp,fn){
+    document.getElementById("confusion").innerHTML=
+    "<h3>Matrice de confusion</h3>"+
+    "<table border='1' style='margin:auto;background:white;color:black'>" +
+    "<tr><th></th><th>Prédit +</th><th>Prédit -</th></tr>"+
+    "<tr><th>Réel +</th><td>"+tp+"</td><td>"+fn+"</td></tr>"+
+    "<tr><th>Réel -</th><td>"+fp+"</td><td>"+tn+"</td></tr>"+
+    "</table>";
+}
+
+const ctx=document.getElementById('chart').getContext('2d');
+const chart=new Chart(ctx,{
+    type:'bar',
+    data:{
+        labels:['TP','TN','FP','FN'],
+        datasets:[{
+            label:'Performance',
+            data:[0,0,0,0],
+            backgroundColor:['#16a34a','#2563eb','#f59e0b','#dc2626']
+        }]
+    }
+});
+
+function updateChart(tp,tn,fp,fn){
+    chart.data.datasets[0].data=[tp,tn,fp,fn];
+    chart.update();
+}
+
+function showWeights(){
+
+    const weights = model.layers[0].getWeights()[0].arraySync();
+
+    let output="<h3>Poids associés aux mots</h3>";
+    output+="<table border='1' style='margin:auto;background:white;color:black'>";
+    output+="<tr><th>Mot</th><th>Influence</th></tr>";
+
+    for(let i=0;i<vocab.length;i++){
+        let influence = weights[i][0].toFixed(3);
+        output+="<tr><td>"+vocab[i]+"</td><td>"+influence+"</td></tr>";
+    }
+
+    output+="</table>";
+    document.getElementById("weightsDisplay").innerHTML=output;
+}
+
+</script>
+
+</body>
+</html>

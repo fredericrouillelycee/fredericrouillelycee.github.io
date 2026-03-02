@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TP Terminale : Écrire un prompt pour IA</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Roboto, Arial, sans-serif;
+            line-height: 1.6;
+            background-color: #f9f9fc;
+            color: #222;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 30px;
+            padding: 30px 40px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        h1 {
+            font-size: 2.2rem;
+            color: #1e1e2f;
+            border-bottom: 3px solid #ff5500;
+            padding-bottom: 10px;
+            margin-top: 0;
+        }
+        h2 {
+            font-size: 1.8rem;
+            margin: 30px 0 10px;
+            color: #ff5500;
+        }
+        h3 {
+            font-size: 1.3rem;
+            margin: 25px 0 10px;
+            color: #333;
+        }
+        .etape {
+            background: #f2f4f8;
+            border-left: 5px solid #ff5500;
+            padding: 15px 25px;
+            margin: 30px 0;
+            border-radius: 0 20px 20px 0;
+        }
+        .question {
+            font-weight: 600;
+            margin: 20px 0 10px;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 16px;
+            font-family: inherit;
+            font-size: 1rem;
+            resize: vertical;
+            margin-bottom: 20px;
+            box-sizing: border-box;
+        }
+        textarea:focus {
+            outline: none;
+            border-color: #ff5500;
+        }
+        .btn-print {
+            background-color: #1e1e2f;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 50px;
+            font-size: 1.1rem;
+            cursor: pointer;
+            margin: 20px 0;
+            transition: background 0.2s;
+        }
+        .btn-print:hover {
+            background-color: #ff5500;
+        }
+        footer {
+            text-align: center;
+            margin-top: 40px;
+            color: #777;
+        }
+        .info {
+            background: #eef;
+            padding: 15px 20px;
+            border-radius: 20px;
+            margin: 20px 0;
+        }
+        .info a {
+            color: #ff5500;
+            font-weight: bold;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+<center>
+    <h1>🧠 TP : Créer un prompt pour générer une page web de vente de chaussures</h1>
+
+    <p><strong>@  F.Rouillé - 2026 - pour les Terminales en Enseignement Scientifique</strong>  <br>
+<h1></h1>
+</center>
+    <strong>Objectif :</strong> Rédiger un prompt détaillé à destination d’une IA (ex. ChatGPT, Copilot, Mistral) afin qu’elle génère <strong>une page d’accueil (landing page) pour un magasin de chaussures</strong>.</p>
+
+
+
+    <div class="info">
+        <p>⭐ <strong>Page de référence :</strong> Avant de commencer, ouvrez <a href="facade.html" target="_blank">cette page d'exemple</a> (fichier <code>facade.html</code>) dans votre navigateur. C'est le type de résultat que l'on souhaite obtenir. Vous pouvez vous en inspirer, mais votre prompt doit être <em>original</em> et décrire précisément la page que vous voulez voir générer.</p>
+    </div>
+
+    <p>Vous allez construire votre prompt étape par étape. À la fin, vous rassemblerez toutes vos idées dans un prompt final, prêt à être testé (si vous le souhaitez, vous pourrez le copier dans une IA pour voir le résultat).</p>
+
+<div class="info">
+<p>⭐ <strong>Classe et date  :</strong> <input size="50"/></p>
+        <p>⭐ <strong>Nom et prénom :</strong> <input size="50"/></p>
+<p>⭐ <strong>Nom et prénom :</strong> <input size="50"/></p>
+    </div>
+
+    <!-- Étape 1 : description générale -->
+    <div class="etape">
+        <h2>📝 Étape 1 – Description générale et cible</h2>
+        <p>Avant de parler technique, décrivez l'identité du magasin : nom, ambiance, public visé, message principal.</p>
+        <div class="question">❶ Quel nom donnez-vous à votre magasin de chaussures ? (ex. SneakerSpot, Urban Feet…)</div>
+        <textarea rows="2" placeholder="Écrivez ici..."></textarea>
+
+        <div class="question">❷ Quelle ambiance souhaitez-vous dégager ? (ex. dynamique/jeune, luxe/minéraliste, éco-responsable, vintage…) Donnez 3 adjectifs.</div>
+        <textarea rows="2" placeholder="Exemple : moderne, urbain, accueillant"></textarea>
+
+        <div class="question">❸ Qui est votre client type ? (âge, style de vie, centre d’intérêt)</div>
+        <textarea rows="3" placeholder="Décrivez brièvement..."></textarea>
+    </div>
+
+    <!-- Étape 2 : structure de la page -->
+    <div class="etape">
+        <h2>🧱 Étape 2 – Structure de la page</h2>
+        <p>Découpez la page en sections (en-tête, corps, pied de page). Soyez précis sur l’ordre et le rôle de chaque bloc.</p>
+        <div class="question">❶ Énumérez les sections principales, de haut en bas (ex. : barre de navigation, bannière hero, grille de produits, newsletter, footer…).</div>
+        <textarea rows="4" placeholder="1. Header avec logo et menu&#10;2. Hero avec accroche et image&#10;3. Section produits / meilleures ventes&#10;4. Footer..."></textarea>
+
+        <div class="question">❷ Pour la section hero, que doit-elle contenir ? (titre, sous-titre, bouton, image…)</div>
+        <textarea rows="3" placeholder="Par exemple : un grand titre accrocheur, un court paragraphe, un bouton d'appel à l'action, une photo de sneakers."></textarea>
+
+        <div class="question">❸ Combien de produits souhaitez-vous afficher dans la grille ? Faut-il un bouton « ajouter au panier » sur chaque carte ?</div>
+        <textarea rows="2" placeholder="Exemple : 4 produits, avec nom, prix, image et bouton 'Acheter'."></textarea>
+    </div>
+
+    <!-- Étape 3 : style et mise en page -->
+    <div class="etape">
+        <h2>🎨 Étape 3 – Style visuel</h2>
+        <p>Définissez les couleurs, la typographie, les formes (bords arrondis, ombres, espacements).</p>
+        <div class="question">❶ Palette de couleurs : donnez une couleur principale (boutons, liens) et une couleur de fond.</div>
+        <textarea rows="2" placeholder="Exemple : principal : orange (#ff5500), fond général : gris très clair (#f5f7fa)"></textarea>
+
+        <div class="question">❷ Quelle police d'écriture ? (si vous n'avez pas de nom, décrivez le style : moderne avec empattement, sans serif, etc.)</div>
+        <textarea rows="2" placeholder="Exemple : une police sans serif comme Roboto ou Open Sans."></textarea>
+
+        <div class="question">❸ Détails de design : bords arrondis ou carrés ? ombres ? transitions ?</div>
+        <textarea rows="3" placeholder="Exemple : cartes produits avec coins arrondis (15px), ombre légère au survol, boutons arrondis."></textarea>
+    </div>
+
+    <!-- Étape 4 : contenu textuel et images -->
+    <div class="etape">
+        <h2>📸 Étape 4 – Contenu (textes et images)</h2>
+        <p>Rédigez les textes (titres, accroches) et indiquez le type d'images souhaitées.</p>
+        <div class="question">❶ Proposez un titre accrocheur pour la section hero.</div>
+        <textarea rows="2" placeholder="Exemple : « Marchez avec style » ou « L'élégance au quotidien »"></textarea>
+
+        <div class="question">❷ Rédigez un court slogan ou paragraphe pour accompagner le titre.</div>
+        <textarea rows="2" placeholder="Exemple : Découvrez notre nouvelle collection de sneakers tendance, confortables et durables."></textarea>
+
+        <div class="question">❸ Description des images : que doivent représenter les images ? (photos de chaussures, mannequins, ambiance urbaine…). Préférez-vous des images libres de droit (Unsplash, Pexels) ?</div>
+        <textarea rows="3" placeholder="Exemple : images de sneakers portées ou en studio, avec des URLs vers des photos libres de droit si possible."></textarea>
+    </div>
+
+    <!-- Étape 5 : prompt final -->
+    <div class="etape">
+        <h2>🚀 Étape 5 – Rédaction du prompt final</h2>
+        <p>En utilisant toutes vos réponses, écrivez un prompt unique, clair et structuré, que vous pourriez donner à une IA. Pensez à être précis et à inclure toutes les informations importantes (structure, style, contenu).</p>
+        <div class="question">✏️ Votre prompt final (vous pouvez l'écrire en français ou en anglais, mais soyez cohérent).</div>
+        <textarea rows="10" placeholder="Exemple de début : « Crée le code HTML/CSS d'une page d'accueil pour un magasin de chaussures nommé 'SneakerSpot'. La page doit avoir une ambiance moderne et dynamique... »"></textarea>
+        <p><em>Conseil : relisez-vous et vérifiez que vous n'avez rien oublié (en-tête, responsive, appel à l'action, footer…).</em></p>
+    </div>
+
+    <!-- Bonus : auto-évaluation -->
+    <h3>🔍 Bonus : auto-évaluation (optionnel)</h3>
+    <p>Si vous pouvez tester votre prompt avec une IA (ChatGPT, Copilot, etc.), copiez le résultat obtenu ci-dessous et comparez-le avec vos attentes. Notez les points d'amélioration.</p>
+    <textarea rows="5" placeholder="Résultat obtenu / commentaires..."></textarea>
+
+    <!-- Impression / sauvegarde -->
+    <button class="btn-print" onclick="window.print()">📄 Imprimer / sauvegarder mes réponses</button>
+    <p style="font-size:0.9rem">Vous pouvez aussi faire "Fichier > Enregistrer sous" pour sauvegarder cette page avec vos réponses.</p>
+
+    <footer>
+        <hr>
+        <p>© 2025 – TP conçu pour la Terminale | Inspiration : rédaction de prompts pour IA générative</p>
+    </footer>
+</div>
+
+<script>
+    // Petit script pour permettre un reset ou une mise en forme supplémentaire (optionnel)
+    console.log("TP prêt !");
+</script>
+</body>
+</html>

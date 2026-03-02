@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Couleurs Numériques - Enseignement Scientifique</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            padding: 40px;
+        }
+
+        h1 {
+            text-align: center;
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 2.5em;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 40px;
+            font-size: 1.1em;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 40px;
+            margin-bottom: 30px;
+        }
+
+        .control-panel {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .control-group {
+            margin-bottom: 30px;
+        }
+
+        .control-group label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 10px;
+            color: #444;
+            font-size: 1.1em;
+        }
+
+        .value-display {
+            display: inline-block;
+            background: #667eea;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-left: 10px;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 8px;
+            border-radius: 5px;
+            background: #ddd;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        input[type="range"]::-moz-range-thumb {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            background: #667eea;
+            cursor: pointer;
+            border: none;
+        }
+
+        .visual-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .color-display {
+            width: 100%;
+            height: 300px;
+            border-radius: 15px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            border: 3px solid #ddd;
+            transition: all 0.3s ease;
+        }
+
+        .info-box {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .info-box h3 {
+            color: #667eea;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+        }
+
+        .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-label {
+            font-weight: 600;
+            color: #555;
+        }
+
+        .info-value {
+            font-family: 'Courier New', monospace;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .binary-display {
+            background: #2c3e50;
+            color: #00ff00;
+            padding: 15px;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9em;
+            margin-top: 10px;
+            word-wrap: break-word;
+            line-height: 1.6;
+        }
+
+        .comparison-section {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 15px;
+            margin-top: 30px;
+        }
+
+        .comparison-section h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .comparison-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            transition: transform 0.2s;
+        }
+
+        .comparison-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .comparison-card h4 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .comparison-card .size {
+            font-size: 1.5em;
+            font-weight: bold;
+            color: #764ba2;
+        }
+
+        .byte-group {
+            display: inline-block;
+            margin: 0 5px;
+            padding: 3px 8px;
+            background: rgba(0, 255, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        .explanation {
+            background: #fff3cd;
+            border-left: 5px solid #ffc107;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 5px;
+        }
+
+        .explanation h4 {
+            color: #856404;
+            margin-bottom: 10px;
+        }
+
+        .color-palette {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .color-option {
+            width: 100%;
+            aspect-ratio: 1;
+            border-radius: 10px;
+            cursor: pointer;
+            border: 3px solid transparent;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .color-option:hover {
+            transform: scale(1.1);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+        }
+
+        .color-option.selected {
+            border: 3px solid #333;
+            box-shadow: 0 0 0 2px white, 0 0 0 5px #667eea;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🎨 Couleurs Numériques</h1>
+<p class="subtitle"> @ F.Rouillé  -  2026 </p>
+        <p class="subtitle">Comprendre l'impact du nombre de couleurs et du gradient sur la taille des images</p>
+
+        <div class="main-content">
+            <div class="control-panel">
+                <h3 style="margin-bottom: 20px; color: #667eea;">⚙️ Paramètres</h3>
+                
+                <div class="control-group">
+                    <label>
+                        Couleur de base
+                    </label>
+                    <div class="color-palette" id="colorPalette"></div>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Nombre de bits par couleur (profondeur)
+                        <span class="value-display" id="bitsDisplay">8 bits</span>
+                    </label>
+                    <input type="range" id="colorBits" min="1" max="16" value="8" step="1">
+                    <p style="margin-top: 10px; color: #666; font-size: 0.9em;">
+                        <strong id="colorCount">256</strong> nuances possibles par canal
+                    </p>
+                </div>
+
+                <div class="control-group">
+                    <label>
+                        Intensité (gradient) de la couleur
+                        <span class="value-display" id="gradientDisplay">50%</span>
+                    </label>
+                    <input type="range" id="gradient" min="0" max="100" value="50" step="1">
+                </div>
+
+                <div class="explanation">
+                    <h4>💡 À savoir</h4>
+                    <p>Plus le nombre de bits est élevé, plus on peut représenter de couleurs différentes, mais plus l'image occupe d'espace en mémoire !</p>
+                </div>
+            </div>
+
+            <div class="visual-panel">
+                <div class="color-display" id="colorSquare"></div>
+                
+                <div class="info-box">
+                    <h3>📊 Informations Techniques</h3>
+                    
+                    <div class="info-row">
+                        <span class="info-label">Code RGB :</span>
+                        <span class="info-value" id="rgbCode">rgb(128, 128, 128)</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">Code Hexadécimal :</span>
+                        <span class="info-value" id="hexCode">#808080</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">Bits par canal :</span>
+                        <span class="info-value" id="bitsPerChannel">8 bits</span>
+                    </div>
+                    
+                    <div class="info-row">
+                        <span class="info-label">Taille par pixel :</span>
+                        <span class="info-value" id="pixelSize">24 bits (3 octets)</span>
+                    </div>
+
+                    <h3 style="margin-top: 20px; margin-bottom: 10px;">🔢 Codage Binaire</h3>
+                    <div class="binary-display" id="binaryCode"></div>
+                </div>
+            </div>
+        </div>
+
+        <div class="comparison-section">
+            <h2>📏 Comparaison de Taille pour une Image 1920×1080 pixels</h2>
+            <div class="comparison-grid" id="comparisonGrid"></div>
+        </div>
+    </div>
+
+    <script>
+        const colorBitsSlider = document.getElementById('colorBits');
+        const gradientSlider = document.getElementById('gradient');
+        const colorSquare = document.getElementById('colorSquare');
+        const bitsDisplay = document.getElementById('bitsDisplay');
+        const gradientDisplay = document.getElementById('gradientDisplay');
+        const colorCount = document.getElementById('colorCount');
+        const rgbCode = document.getElementById('rgbCode');
+        const hexCode = document.getElementById('hexCode');
+        const bitsPerChannel = document.getElementById('bitsPerChannel');
+        const pixelSize = document.getElementById('pixelSize');
+        const binaryCode = document.getElementById('binaryCode');
+        const comparisonGrid = document.getElementById('comparisonGrid');
+        const colorPalette = document.getElementById('colorPalette');
+
+        // Palette de 16 couleurs de base
+        const baseColors = [
+            { name: 'Noir', r: 0, g: 0, b: 0 },
+            { name: 'Blanc', r: 255, g: 255, b: 255 },
+            { name: 'Rouge', r: 255, g: 0, b: 0 },
+            { name: 'Vert', r: 0, g: 255, b: 0 },
+            { name: 'Bleu', r: 0, g: 0, b: 255 },
+            { name: 'Jaune', r: 255, g: 255, b: 0 },
+            { name: 'Cyan', r: 0, g: 255, b: 255 },
+            { name: 'Magenta', r: 255, g: 0, b: 255 },
+            { name: 'Orange', r: 255, g: 165, b: 0 },
+            { name: 'Violet', r: 128, g: 0, b: 128 },
+            { name: 'Rose', r: 255, g: 192, b: 203 },
+            { name: 'Marron', r: 165, g: 42, b: 42 },
+            { name: 'Gris clair', r: 192, g: 192, b: 192 },
+            { name: 'Gris', r: 128, g: 128, b: 128 },
+            { name: 'Gris foncé', r: 64, g: 64, b: 64 },
+            { name: 'Vert foncé', r: 0, g: 128, b: 0 }
+        ];
+
+        let selectedColorIndex = 13; // Gris par défaut
+
+        // Créer la palette de couleurs
+        function createColorPalette() {
+            colorPalette.innerHTML = baseColors.map((color, index) => {
+                const rgb = `rgb(${color.r}, ${color.g}, ${color.b})`;
+                const selected = index === selectedColorIndex ? 'selected' : '';
+                return `<div class="color-option ${selected}" 
+                             style="background-color: ${rgb};" 
+                             data-index="${index}"
+                             title="${color.name}"></div>`;
+            }).join('');
+
+            // Ajouter les écouteurs de clics
+            document.querySelectorAll('.color-option').forEach(option => {
+                option.addEventListener('click', function() {
+                    selectedColorIndex = parseInt(this.dataset.index);
+                    document.querySelectorAll('.color-option').forEach(opt => opt.classList.remove('selected'));
+                    this.classList.add('selected');
+                    updateDisplay();
+                });
+            });
+        }
+
+        function updateDisplay() {
+            const bits = parseInt(colorBitsSlider.value);
+            const gradientPercent = parseInt(gradientSlider.value);
+            const baseColor = baseColors[selectedColorIndex];
+            
+            // Calculer le nombre de nuances possibles
+            const nuances = Math.pow(2, bits);
+            
+            // Appliquer le gradient à chaque canal de couleur
+            const maxValue = nuances - 1;
+            const factor = gradientPercent / 100;
+            
+            // Calculer les valeurs RGB avec le gradient appliqué
+            let r = Math.round((baseColor.r / 255) * maxValue * factor);
+            let g = Math.round((baseColor.g / 255) * maxValue * factor);
+            let b = Math.round((baseColor.b / 255) * maxValue * factor);
+            
+            // Pour l'affichage en 8 bits (standard), on scale les valeurs
+            const displayR = Math.round((r / maxValue) * 255);
+            const displayG = Math.round((g / maxValue) * 255);
+            const displayB = Math.round((b / maxValue) * 255);
+            
+            // Mettre à jour l'affichage
+            bitsDisplay.textContent = `${bits} bit${bits > 1 ? 's' : ''}`;
+            gradientDisplay.textContent = `${gradientPercent}%`;
+            colorCount.textContent = nuances.toLocaleString('fr-FR');
+            
+            // Appliquer la couleur au carré
+            colorSquare.style.backgroundColor = `rgb(${displayR}, ${displayG}, ${displayB})`;
+            
+            // Afficher le code RGB
+            rgbCode.textContent = `rgb(${displayR}, ${displayG}, ${displayB})`;
+            
+            // Afficher le code hexadécimal
+            const hexR = displayR.toString(16).padStart(2, '0').toUpperCase();
+            const hexG = displayG.toString(16).padStart(2, '0').toUpperCase();
+            const hexB = displayB.toString(16).padStart(2, '0').toUpperCase();
+            hexCode.textContent = `#${hexR}${hexG}${hexB}`;
+            
+            // Afficher les informations sur la taille
+            const totalBits = bits * 3; // 3 canaux RGB
+            const totalBytes = Math.ceil(totalBits / 8);
+            bitsPerChannel.textContent = `${bits} bits`;
+            pixelSize.textContent = `${totalBits} bits (${totalBytes} octet${totalBytes > 1 ? 's' : ''})`;
+            
+            // Générer le code binaire
+            generateBinaryCode(r, g, b, bits);
+            
+            // Mettre à jour la comparaison
+            updateComparison();
+        }
+
+        function generateBinaryCode(rValue, gValue, bValue, bits) {
+            // Convertir les valeurs en binaire avec le nombre de bits spécifié
+            const binaryR = rValue.toString(2).padStart(bits, '0');
+            const binaryG = gValue.toString(2).padStart(bits, '0');
+            const binaryB = bValue.toString(2).padStart(bits, '0');
+            
+            // Créer l'affichage pour les 3 canaux RGB
+            let display = '<div style="margin-bottom: 10px;"><strong>Rouge (R):</strong></div>';
+            display += formatBinaryWithBytes(binaryR) + '<br><br>';
+            
+            display += '<div style="margin-bottom: 10px;"><strong>Vert (G):</strong></div>';
+            display += formatBinaryWithBytes(binaryG) + '<br><br>';
+            
+            display += '<div style="margin-bottom: 10px;"><strong>Bleu (B):</strong></div>';
+            display += formatBinaryWithBytes(binaryB);
+            
+            const totalBits = bits * 3;
+            display += `<br><br><div style="color: #00ffff;"><strong>TOTAL: ${totalBits} bits = ${Math.ceil(totalBits/8)} octet(s)</strong></div>`;
+            
+            binaryCode.innerHTML = display;
+        }
+
+        function formatBinaryWithBytes(binary) {
+            // Grouper par octets (8 bits)
+            let result = '';
+            let temp = binary;
+            
+            while (temp.length > 0) {
+                let chunk = temp.substring(0, 8);
+                temp = temp.substring(8);
+                result += `<span class="byte-group">${chunk}</span>`;
+            }
+            
+            return result || '<span class="byte-group">00000000</span>';
+        }
+
+        function updateComparison() {
+            const bits = parseInt(colorBitsSlider.value);
+            const width = 1920;
+            const height = 1080;
+            const totalPixels = width * height;
+            
+            const modes = [
+                { name: 'Noir & Blanc', bits: 1, desc: '1 bit/pixel' },
+                { name: 'Niveaux de gris (4 bits)', bits: 4, desc: '4 bits/pixel' },
+                { name: 'Palette 256 couleurs', bits: 8, desc: '8 bits/pixel' },
+                { name: 'Couleur actuelle', bits: bits * 3, desc: `${bits} bits × 3 canaux` },
+                { name: 'True Color (24 bits)', bits: 24, desc: '8 bits × 3 canaux' },
+                { name: 'True Color + Alpha', bits: 32, desc: '8 bits × 4 canaux' },
+            ];
+            
+            comparisonGrid.innerHTML = modes.map(mode => {
+                const totalBits = totalPixels * mode.bits;
+                const bytes = totalBits / 8;
+                const kb = bytes / 1024;
+                const mb = kb / 1024;
+                
+                let sizeText;
+                if (mb >= 1) {
+                    sizeText = `${mb.toFixed(2)} Mo`;
+                } else if (kb >= 1) {
+                    sizeText = `${kb.toFixed(2)} Ko`;
+                } else {
+                    sizeText = `${bytes.toFixed(0)} octets`;
+                }
+                
+                const isActive = mode.name === 'Couleur actuelle';
+                
+                return `
+                    <div class="comparison-card" style="${isActive ? 'border: 3px solid #667eea;' : ''}">
+                        <h4>${mode.name}</h4>
+                        <p style="color: #666; font-size: 0.9em; margin: 5px 0;">${mode.desc}</p>
+                        <div class="size">${sizeText}</div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        // Écouteurs d'événements
+        colorBitsSlider.addEventListener('input', updateDisplay);
+        gradientSlider.addEventListener('input', updateDisplay);
+
+        // Initialisation
+        createColorPalette();
+        updateDisplay();
+    </script>
+</body>
+</html>

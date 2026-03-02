@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TP Machine Learning - Enseignement Scientifique</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Fraunces:wght@300;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #2d5f8f;
+            --secondary: #e86252;
+            --accent: #f4a261;
+            --dark: #1a1a2e;
+            --light: #f8f9fa;
+            --border: #d1d5db;
+            --shadow: rgba(0, 0, 0, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Space Mono', monospace;
+            line-height: 1.7;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #e8ecf1 100%);
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 10px 40px var(--shadow);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        /* Header Section */
+        .header {
+            background: #3498db;
+            color: white;
+            padding: 40px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 300px;
+            height: 300px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+        }
+
+        .header h1 {
+            font-family: 'Fraunces', serif;
+            font-size: 2.2em;
+            font-weight: 800;
+            margin-bottom: 10px;
+            position: relative;
+        }
+
+        .header .subtitle {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 400;
+            position: relative;
+        }
+
+        /* Student Info Section */
+        .student-info {
+            background: #f8f9fa;
+            padding: 30px 40px;
+            border-bottom: 3px solid var(--accent);
+        }
+
+        .student-info h2 {
+            font-family: 'Fraunces', serif;
+            font-size: 1.3em;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-weight: 600;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .info-field {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .info-field label {
+            font-size: 0.85em;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-field input {
+            padding: 12px 15px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .info-field input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(45, 95, 143, 0.1);
+        }
+
+        .info-field.full-width {
+            grid-column: 1 / -1;
+        }
+
+        /* Content Section */
+        .content {
+            padding: 40px;
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding-bottom: 30px;
+            border-bottom: 1px dashed var(--border);
+        }
+
+        .section:last-child {
+            border-bottom: none;
+        }
+
+        h2 {
+            font-family: 'Fraunces', serif;
+            color: var(--primary);
+            font-size: 1.6em;
+            margin-bottom: 15px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        h2::before {
+            content: '';
+            width: 6px;
+            height: 30px;
+            background: var(--secondary);
+            border-radius: 3px;
+        }
+
+        h3 {
+            font-family: 'Fraunces', serif;
+            color: var(--dark);
+            font-size: 1.2em;
+            margin: 25px 0 15px;
+            font-weight: 600;
+        }
+
+        h4 {
+            color: var(--primary);
+            font-size: 1em;
+            margin: 20px 0 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        p, li {
+            margin-bottom: 12px;
+            font-size: 0.95em;
+        }
+
+        ul {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        /* Tables */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 0.9em;
+            box-shadow: 0 2px 8px var(--shadow);
+            border-radius: 6px;
+            overflow: hidden;
+        }
+
+        thead {
+            background: var(--primary);
+            color: white;
+        }
+
+        th {
+            padding: 15px 12px;
+            text-align: left;
+            font-weight: 700;
+            text-transform: uppercase;
+            font-size: 0.85em;
+            letter-spacing: 0.5px;
+        }
+
+        td {
+            padding: 12px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        tbody tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Input fields in tables */
+        td input[type="text"],
+        td input[type="number"] {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9em;
+        }
+
+        td input:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        /* Checkboxes */
+        input[type="checkbox"] {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary);
+        }
+
+        /* Text areas for questions */
+        .answer-box {
+            width: 100%;
+            min-height: 80px;
+            padding: 12px;
+            border: 2px solid var(--border);
+            border-radius: 6px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9em;
+            margin-top: 10px;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .answer-box:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(45, 95, 143, 0.1);
+        }
+
+        /* Info boxes */
+        .info-box {
+            background: linear-gradient(135deg, #e8f4f8 0%, #d4e9f2 100%);
+            border-left: 4px solid var(--primary);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fff4e6 0%, #ffe8cc 100%);
+            border-left: 4px solid var(--accent);
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 6px;
+        }
+
+        .key-points {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 2px solid var(--primary);
+            border-radius: 8px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .key-points h3 {
+            color: var(--primary);
+            margin-top: 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .key-points ul {
+            margin-top: 15px;
+        }
+
+        .key-points li {
+            margin-bottom: 10px;
+            padding-left: 10px;
+        }
+
+        /* Print Button */
+        .print-button {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: var(--secondary);
+            color: white;
+            border: none;
+            padding: 18px 30px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95em;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 6px 20px rgba(232, 98, 82, 0.4);
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            z-index: 1000;
+        }
+
+        .print-button:hover {
+            background: #d94f3f;
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(232, 98, 82, 0.5);
+        }
+
+        .print-button:active {
+            transform: translateY(-1px);
+        }
+
+        /* Print styles */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+            .print-button {
+                display: none;
+            }
+
+            .section {
+                page-break-inside: avoid;
+            }
+
+            h2 {
+                page-break-after: avoid;
+            }
+
+            table {
+                page-break-inside: avoid;
+            }
+        }
+
+        /* Emoji icons */
+        .emoji {
+            font-style: normal;
+            font-size: 1.2em;
+            margin-right: 5px;
+        }
+
+        /* Code styling */
+        code {
+            background: #f4f4f4;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.9em;
+            color: var(--secondary);
+        }
+
+        /* Lists with custom markers */
+        .checklist {
+            list-style: none;
+            margin-left: 0;
+        }
+
+        .checklist li {
+            padding-left: 30px;
+            position: relative;
+        }
+
+        .checklist li::before {
+            content: '□';
+            position: absolute;
+            left: 0;
+            font-size: 1.3em;
+            color: var(--primary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header h1 {
+                font-size: 1.6em;
+            }
+
+            .content {
+                padding: 25px;
+            }
+.bandeau {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espace de 20px entre l'image et le texte */
+}
+ h1 .petit {
+        font-size: 12px; /* Taille réduite */
+        font-weight: normal; /* Optionnel : moins gras */
+        color: gray; /* Optionnel : couleur différente */
+    }
+            .print-button {
+                bottom: 20px;
+                right: 20px;
+                padding: 15px 25px;
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+ <center>
+<div class="bandeau">
+ <img src="logo4.png" alt="Icône Robot" width="150" height="150">
+            <h1>  TP Enseignement Scientifique <br>
+              <span class="petit">Comment une IA apprend-elle ?</span><br>
+              <span class="petit">@ F.Rouillé   -  2026</span>
+           </h1>
+        </div>
+  </center>
+        </div></div>
+
+        <!-- Student Information -->
+        <div class="student-info">
+            <h2>📋 Informations de l'équipe</h2>
+            <div class="info-grid">
+                <div class="info-field">
+                    <label for="nom1">Nom Élève 1</label>
+                    <input type="text" id="nom1" placeholder="Nom">
+                </div>
+                <div class="info-field">
+                    <label for="prenom1">Prénom Élève 1</label>
+                    <input type="text" id="prenom1" placeholder="Prénom">
+                </div>
+                <div class="info-field">
+                    <label for="nom2">Nom Élève 2</label>
+                    <input type="text" id="nom2" placeholder="Nom">
+                </div>
+                <div class="info-field">
+                    <label for="prenom2">Prénom Élève 2</label>
+                    <input type="text" id="prenom2" placeholder="Prénom">
+                </div>
+                <div class="info-field full-width">
+                    <label for="classe">Classe</label>
+                    <input type="text" id="classe" placeholder="Ex: Terminale 1">
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="content">
+            <!-- Objectives -->
+            <div class="section">
+                <h2><span class="emoji">🎯</span> Objectifs</h2>
+                <p>À la fin de ce TP, vous serez capable de :</p>
+                <ul>
+                    <li>Entraîner une intelligence artificielle à reconnaître des objets</li>
+                    <li>Comprendre le principe d'apprentissage automatique (machine learning)</li>
+                    <li>Tester la capacité de généralisation d'une IA</li>
+                    <li>Identifier les limites et biais des systèmes d'IA</li>
+                    <li>Réfléchir aux applications et enjeux éthiques de l'IA</li>
+                </ul>
+            </div>
+
+            <!-- Theoretical Background -->
+            <div class="section">
+                <h2><span class="emoji">📚</span> Rappels théoriques</h2>
+                
+                <h3>Qu'est-ce que le Machine Learning ?</h3>
+                <p>Le <strong>machine learning</strong> (apprentissage automatique) est une méthode qui permet à un ordinateur d'apprendre à partir d'exemples, sans être explicitement programmé pour chaque situation.</p>
+                
+                <div class="info-box">
+                    <h4>Principe de base :</h4>
+                    <ol>
+                        <li><strong>Collecte de données</strong> : On montre à l'IA de nombreux exemples</li>
+                        <li><strong>Entraînement</strong> : L'IA analyse ces exemples et en extrait des caractéristiques</li>
+                        <li><strong>Prédiction</strong> : L'IA peut ensuite reconnaître de nouveaux objets jamais vus</li>
+                    </ol>
+                </div>
+
+                <div class="warning-box">
+                    <h4>Différence avec la programmation classique :</h4>
+                    <ul>
+                        <li><strong>Programmation classique</strong> : On écrit toutes les règles (SI cet objet est rouge ET rond ALORS c'est une pomme)</li>
+                        <li><strong>Machine Learning</strong> : L'IA découvre elle-même les règles à partir des exemples</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Part 1: Preparation -->
+            <div class="section">
+                <h2><span class="emoji">🔬</span> Partie 1 : Préparation (10 min)</h2>
+                
+                <h3>Étape 1 : Découverte du dataset</h3>
+                <p>Votre professeur vous a fourni un dossier contenant des images d'objets du quotidien, organisées en catégories.</p>
+                
+                <h4>Notez les 4 catégories d'objets disponibles :</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th style="width: 25%">N°</th>
+                            <th>Catégorie</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>1.</td>
+                            <td><input type="text" placeholder="Catégorie 1"></td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td><input type="text" placeholder="Catégorie 2"></td>
+                        </tr>
+                        <tr>
+                            <td>3.</td>
+                            <td><input type="text" placeholder="Catégorie 3"></td>
+                        </tr>
+                        <tr>
+                            <td>4.</td>
+                            <td><input type="text" placeholder="Catégorie 4"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Question préliminaire :</h4>
+                <p>Observez les images. Sont-elles toutes identiques dans une même catégorie ? Que remarquez-vous ?</p>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+
+                <h3>Étape 2 : Rassemblez vos objets de test</h3>
+                <p>Pour la phase de test (Partie 3), préparez <strong>3-4 objets réels</strong> correspondant ou similaires aux catégories du dataset.</p>
+                
+                <h4>Mes objets de test :</h4>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td style="width: 15%">1.</td>
+                            <td><input type="text" placeholder="Objet 1"></td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td><input type="text" placeholder="Objet 2"></td>
+                        </tr>
+                        <tr>
+                            <td>3.</td>
+                            <td><input type="text" placeholder="Objet 3"></td>
+                        </tr>
+                        <tr>
+                            <td>4.</td>
+                            <td><input type="text" placeholder="Objet 4"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h3>Étape 3 : Accès à Teachable Machine</h3>
+                <div class="info-box">
+                    <ol>
+                        <li>Ouvrez un navigateur web (Chrome recommandé)</li>
+                        <li>Allez sur : <code>https://teachablemachine.withgoogle.com</code></li>
+                        <li>Cliquez sur <strong>"Get Started"</strong> (Commencer)</li>
+                        <li>Choisissez <strong>"Image Project"</strong> (Projet d'images)</li>
+                        <li>Sélectionnez <strong>"Standard image model"</strong></li>
+                    </ol>
+                </div>
+            </div>
+
+            <!-- Part 2: Training -->
+            <div class="section">
+                <h2><span class="emoji">🧠</span> Partie 2 : Entraînement de l'IA (30 min)</h2>
+                
+                <h3>Étape 4 : Import des images d'entraînement</h3>
+                <div class="warning-box">
+                    <strong>Pour chaque catégorie d'objets :</strong>
+                    <ol>
+                        <li>Cliquez sur "Class 1" et renommez-la avec le nom de votre première catégorie</li>
+                        <li>Cliquez sur <strong>"Upload"</strong> (Télécharger)</li>
+                        <li>Sélectionnez <strong>toutes les images</strong> du dossier correspondant à cette catégorie</li>
+                        <li>Attendez le chargement des images</li>
+                    </ol>
+                    <p><strong>Répétez pour les 3 autres catégories</strong></p>
+                    <p><strong>Ajoutez une 5ème classe "Rien"</strong> avec des images de fond vide</p>
+                </div>
+
+                <h3>Comptage des données</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Catégorie</th>
+                            <th style="width: 30%">Nombre d'images chargées</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Catégorie 1 :</td>
+                            <td><input type="number" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Catégorie 2 :</td>
+                            <td><input type="number" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Catégorie 3 :</td>
+                            <td><input type="number" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Catégorie 4 :</td>
+                            <td><input type="number" placeholder="0"></td>
+                        </tr>
+                        <tr>
+                            <td>Rien/Background :</td>
+                            <td><input type="number" placeholder="0"></td>
+                        </tr>
+                        <tr style="background: #f8f9fa; font-weight: bold;">
+                            <td>TOTAL</td>
+                            <td><input type="number" placeholder="0"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Q1. Selon vous, pourquoi est-il important d'avoir beaucoup d'images par catégorie ?</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+
+                <h3>Étape 5 : Analyse des données d'entraînement</h3>
+                <p>Avant de lancer l'entraînement, observez attentivement les images de CHAQUE catégorie.</p>
+                
+                <h4>Pour UNE catégorie de votre choix, notez la diversité des images :</h4>
+                <p>Catégorie analysée : <input type="text" style="width: 300px; display: inline-block; margin-left: 10px;" placeholder="Nom de la catégorie"></p>
+                
+                <ul class="checklist">
+                    <li><input type="checkbox"> Différentes couleurs</li>
+                    <li><input type="checkbox"> Différents angles de vue</li>
+                    <li><input type="checkbox"> Différentes distances (gros plan / éloigné)</li>
+                    <li><input type="checkbox"> Différents arrière-plans</li>
+                    <li><input type="checkbox"> Différentes marques/modèles</li>
+                    <li><input type="checkbox"> Différents éclairages</li>
+                </ul>
+
+                <h4>Q2. Pourquoi cette diversité est-elle importante pour l'entraînement de l'IA ?</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+
+                <h3>Étape 6 : Entraînement du modèle</h3>
+                <div class="info-box">
+                    <ol>
+                        <li>Une fois toutes les images chargées, cliquez sur <strong>"Train Model"</strong> (Entraîner le modèle)</li>
+                        <li>Attendez la fin de l'entraînement (barre de progression)</li>
+                        <li>⏱️ Notez le temps d'entraînement : <input type="text" style="width: 150px; display: inline-block;" placeholder="___ secondes"></li>
+                    </ol>
+                </div>
+
+                <h4>Q3. À votre avis, de quoi dépend le temps d'entraînement ?</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+            </div>
+
+            <!-- Part 3: Testing -->
+            <div class="section">
+                <h2><span class="emoji">🎯</span> Partie 3 : Test et généralisation (35 min)</h2>
+                
+                <div class="warning-box">
+                    <strong>🎯 Objectif de cette partie :</strong> Vérifier si l'IA peut reconnaître des objets qu'elle n'a JAMAIS vus pendant l'entraînement !
+                </div>
+
+                <h3>Étape 7 : Test avec objets réels (via webcam)</h3>
+                <p>Maintenant, utilisez la <strong>webcam</strong> dans la section "Preview" pour tester votre modèle avec VOS objets réels.</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Objet réel testé</th>
+                            <th>Catégorie attendue</th>
+                            <th>Reconnu ?</th>
+                            <th>% confiance</th>
+                            <th>Observations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text"></td>
+                            <td><input type="text"></td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text"></td>
+                            <td><input type="text"></td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text"></td>
+                            <td><input type="text"></td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text"></td>
+                            <td><input type="text"></td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Q4. L'IA reconnaît-elle correctement vos objets alors qu'elle ne les a jamais vus ? Comment expliquez-vous ce résultat ?</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+
+                <h3>Étape 8 : Tests de robustesse</h3>
+                <p>Testez votre modèle dans différentes conditions avec UN de vos objets :</p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Condition de test</th>
+                            <th>Reconnu ?</th>
+                            <th>% confiance</th>
+                            <th>Observations</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>Position normale</td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td>Objet tourné à 90°</td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td>Objet à l'envers</td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td>Très proche de la caméra</td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td>Très loin de la caméra</td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td>Partiellement caché</td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td>Éclairage modifié</td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td>Tenu dans la main</td>
+                            <td><input type="checkbox"> Oui</td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Q5. Dans quelles situations l'IA échoue-t-elle ? Pouvez-vous expliquer pourquoi en lien avec les données d'entraînement ?</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+
+                <h3>Étape 9 : Test avec objets piège</h3>
+                <p>Testez maintenant avec des objets <strong>NON présents</strong> dans vos catégories d'entraînement.</p>
+                <p><em>Exemples : une gomme, un bracelet, une paire de lunettes, un livre...</em></p>
+                
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Objet piège</th>
+                            <th>Prédiction de l'IA</th>
+                            <th>% de confiance</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text"></td>
+                            <td><input type="text"></td>
+                            <td><input type="text" placeholder="%"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text"></td>
+                            <td><input type="text"></td>
+                            <td><input type="text" placeholder="%"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text"></td>
+                            <td><input type="text"></td>
+                            <td><input type="text" placeholder="%"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Q6. Que fait l'IA face à un objet totalement inconnu ? Dit-elle "je ne sais pas" ? Pourquoi est-ce un problème potentiel ?</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+
+                <h3>Étape 10 : Comparaison entre binômes</h3>
+                <p>Échangez avec le binôme voisin (qui a entraîné son propre modèle).</p>
+                
+                <div class="info-box">
+                    <ol>
+                        <li>Testez VOTRE modèle avec LEURS objets</li>
+                        <li>Testez LEUR modèle avec VOS objets</li>
+                    </ol>
+                </div>
+
+                <p><strong>Résultats :</strong></p>
+                <ul class="checklist">
+                    <li>Mon modèle reconnaît leurs objets : 
+                        <input type="checkbox"> Bien 
+                        <input type="checkbox"> Moyennement 
+                        <input type="checkbox"> Mal
+                    </li>
+                    <li>Leur modèle reconnaît mes objets : 
+                        <input type="checkbox"> Bien 
+                        <input type="checkbox"> Moyennement 
+                        <input type="checkbox"> Mal
+                    </li>
+                </ul>
+
+                <h4>Q7. Les deux modèles donnent-ils les mêmes résultats ? Pourquoi peuvent-ils différer alors qu'ils ont été entraînés sur les mêmes catégories ?</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+            </div>
+
+            <!-- Part 4: Advanced Experimentation -->
+            <div class="section">
+                <h2><span class="emoji">🔬</span> Partie 4 : Expérimentation avancée (15 min)</h2>
+                
+                <h3>Étape 11 : Impact de la quantité de données</h3>
+                <p><strong>Expérience :</strong> Créez un NOUVEAU modèle avec seulement 10-15 images par catégorie (au lieu de toutes).</p>
+                
+                <div class="info-box">
+                    <ol>
+                        <li>Créez un nouveau projet sur Teachable Machine</li>
+                        <li>N'importez que 10-15 images par catégorie (choisissez-les au hasard)</li>
+                        <li>Entraînez ce nouveau modèle</li>
+                        <li>Testez-le avec les mêmes objets réels qu'avant</li>
+                    </ol>
+                </div>
+
+                <h4>Résultats comparatifs :</h4>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Objet testé</th>
+                            <th>% confiance<br>(modèle complet)</th>
+                            <th>% confiance<br>(modèle réduit)</th>
+                            <th>Différence</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td><input type="text"></td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text"></td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td><input type="text"></td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text" placeholder="%"></td>
+                            <td><input type="text"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Q8. Que constatez-vous ? Quelle est l'importance de la quantité de données d'entraînement ?</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+            </div>
+
+            <!-- Part 5: Reflection -->
+            <div class="section">
+                <h2><span class="emoji">💭</span> Partie 5 : Réflexion et synthèse (20 min)</h2>
+                
+                <h3>Thème 1 : Généralisation de l'IA</h3>
+                
+                <h4>Q9. Définissez avec vos mots le concept de "généralisation" en intelligence artificielle.</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+
+                <h4>Q10. Qu'est-ce qui permet à une IA de bien généraliser (c'est-à-dire de reconnaître des objets jamais vus) ?</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+
+                <h3>Thème 2 : Biais et limites</h3>
+                
+                <h4>Q11. Imaginez qu'on entraîne une IA à reconnaître des "stylos" uniquement avec des images de stylos bleus. Que se passera-t-il si on lui montre un stylo rouge ?</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+
+                <h4>Q12. Donnez un exemple concret de biais problématique dans une IA utilisée dans la vie réelle (reconnaissance faciale, recrutement, diagnostic médical, attribution de crédits bancaires...).</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+
+                <h4>Q13. L'IA que vous avez créée "comprend-elle" vraiment ce qu'est une bouteille ou un stylo ? Expliquez.</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+
+                <h3>Thème 3 : Applications et éthique</h3>
+                
+                <h4>Q14. Citez 3 applications concrètes du machine learning par reconnaissance d'images dans la vie quotidienne :</h4>
+                <table>
+                    <tbody>
+                        <tr>
+                            <td style="width: 10%">1.</td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td>2.</td>
+                            <td><input type="text"></td>
+                        </tr>
+                        <tr>
+                            <td>3.</td>
+                            <td><input type="text"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <h4>Q15. Quels dangers peuvent représenter les erreurs de reconnaissance d'une IA dans les contextes suivants :</h4>
+                <p><strong>Voiture autonome :</strong></p>
+                <textarea class="answer-box" style="min-height: 60px;" placeholder="Votre réponse..."></textarea>
+                
+                <p><strong>Diagnostic médical :</strong></p>
+                <textarea class="answer-box" style="min-height: 60px;" placeholder="Votre réponse..."></textarea>
+                
+                <p><strong>Contrôle aux frontières :</strong></p>
+                <textarea class="answer-box" style="min-height: 60px;" placeholder="Votre réponse..."></textarea>
+
+                <h4>Q16. Selon vous, faut-il toujours faire confiance à une IA ou garder un humain dans la boucle de décision ? Justifiez.</h4>
+                <textarea class="answer-box" placeholder="Votre réponse..."></textarea>
+            </div>
+
+            <!-- Key Takeaways -->
+            <div class="section">
+                <div class="key-points">
+                    <h3><span class="emoji">📝</span> Ce qu'il faut retenir</h3>
+                    <ul>
+                        <li>Une IA apprend à partir d'<strong>exemples</strong> (données d'entraînement)</li>
+                        <li>Plus les données sont <strong>nombreuses et variées</strong>, meilleure est la généralisation</li>
+                        <li>Une IA peut reconnaître des objets jamais vus si elle a appris les <strong>caractéristiques générales</strong></li>
+                        <li>L'IA ne "comprend" pas vraiment : elle identifie des <strong>motifs statistiques</strong> (formes, couleurs, textures)</li>
+                        <li>Les <strong>biais</strong> dans les données d'entraînement créent des biais dans les prédictions de l'IA</li>
+                        <li>L'IA peut se tromper et ne dit jamais "je ne sais pas" → danger de <strong>fausses certitudes</strong></li>
+                        <li>Le machine learning nécessite une <strong>réflexion éthique</strong> sur ses usages et ses limites</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Print Button -->
+    <button class="print-button" onclick="window.print()">
+        🖨️ Imprimer / Enregistrer en PDF
+    </button>
+
+    <script>
+        // Auto-calculate total in the data counting table
+        document.addEventListener('input', function(e) {
+            if (e.target.matches('input[type="number"]')) {
+                const table = e.target.closest('table');
+                if (table && table.querySelector('thead th:contains("Nombre d\'images")')) {
+                    const inputs = Array.from(table.querySelectorAll('tbody input[type="number"]'));
+                    const total = inputs.slice(0, -1).reduce((sum, input) => sum + (parseInt(input.value) || 0), 0);
+                    const totalInput = inputs[inputs.length - 1];
+                    if (totalInput) {
+                        totalInput.value = total;
+                    }
+                }
+            }
+        });
+
+        // Print functionality
+        window.addEventListener('beforeprint', function() {
+            document.title = 'TP_Machine_Learning_' + 
+                (document.getElementById('nom1').value || 'Eleve1') + '_' + 
+                (document.getElementById('nom2').value || 'Eleve2');
+        });
+    </script>
+</body>
+</html>

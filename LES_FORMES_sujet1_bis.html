@@ -1,0 +1,791 @@
+﻿<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TP - Apprentissage d'une IA - Reconnaissance de formes</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@400;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'IBM Plex Sans', sans-serif;
+            line-height: 1.6;
+            color: #1f2937;
+            background: #f8f9fa;
+padding: 20mm;
+        }
+
+        .print-container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
+            box-shadow: 0 0 20px rgba(0,0,0,0.1);
+        }
+
+        .page {
+            padding: 20mm;
+            background: white;
+            min-height: 297mm;
+          /*  page-break-after: always;*/
+        }
+
+        .page:last-child {
+            /*page-break-after: auto;*/
+        }
+
+        .no-print {
+            background: #2563eb;
+            padding: 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .no-print button {
+            background: white;
+            color: #2563eb;
+            border: none;
+            padding: 12px 32px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'IBM Plex Sans', sans-serif;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .no-print button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        /* En-tête du document */
+        .header {
+            border-bottom: 3px solid #2563eb;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
+        }
+
+        .header-top {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 15px;
+        }
+
+        .header-left {
+            flex: 1;
+        }
+
+        .header-right {
+            text-align: right;
+            font-size: 13px;
+            color: #6b7280;
+        }
+
+        .main-title {
+            font-family: 'Crimson Pro', serif;
+            font-size: 28px;
+            color: #1f2937;
+            font-weight: 700;
+            margin-bottom: 8px;
+            line-height: 1.2;
+        }
+
+        .subtitle {
+            font-size: 16px;
+            color: #6b7280;
+            font-weight: 500;
+        }
+
+        /* Champs élèves */
+        .student-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            border: 2px solid #e5e7eb;
+        }
+
+        .student-field {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .student-field label {
+            font-weight: 600;
+            min-width: 80px;
+            color: #374151;
+        }
+
+        .student-field input {
+            flex: 1;
+            border: none;
+            border-bottom: 2px solid #2563eb;
+            padding: 8px 4px;
+            font-size: 15px;
+            font-family: 'IBM Plex Sans', sans-serif;
+            background: transparent;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .student-field input:focus {
+            border-bottom-color: #1d4ed8;
+        }
+
+        .class-field {
+            grid-column: 1 / -1;
+        }
+
+        /* Objectifs */
+        .objectives {
+            background: #eff6ff;
+            border-left: 4px solid #2563eb;
+            padding: 15px 20px;
+            margin-bottom: 25px;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .objectives h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 18px;
+            color: #1e40af;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .objectives ul {
+            margin-left: 20px;
+        }
+
+        .objectives li {
+            margin-bottom: 5px;
+            color: #1e3a8a;
+        }
+
+        /* Sections */
+        h2 {
+            font-family: 'Crimson Pro', serif;
+            font-size: 22px;
+            color: #1f2937;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            font-weight: 700;
+            border-bottom: 2px solid #e5e7eb;
+            padding-bottom: 8px;
+        }
+
+        h3 {
+            font-size: 17px;
+            color: #374151;
+            margin-top: 20px;
+            margin-bottom: 12px;
+            font-weight: 600;
+        }
+
+        h4 {
+            font-size: 15px;
+            color: #4b5563;
+            margin-top: 15px;
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        p {
+            margin-bottom: 12px;
+            text-align: justify;
+        }
+
+        ul, ol {
+            margin-left: 25px;
+            margin-bottom: 15px;
+        }
+
+        li {
+            margin-bottom: 8px;
+        }
+
+        /* Zones de réponse */
+        .answer-box {
+            border: 2px solid #d1d5db;
+            border-radius: 8px;
+            padding: 15px;
+    resize: vertical;
+overflow: auto;        margin: 15px 0;
+            min-height: 80px;
+            background: white;
+        }
+
+        .answer-box.large {
+            min-height: 150px;
+        }
+
+        .answer-box::before {
+            content: "Réponse :";
+            display: block;
+            font-weight: 600;
+            color: #6b7280;
+            margin-bottom: 8px;
+            font-size: 13px;
+        }
+
+        /* Tableaux */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            font-size: 14px;
+        }
+
+        th {
+            background: #f3f4f6;
+            padding: 12px;
+            text-align: left;
+            font-weight: 600;
+            border: 1px solid #d1d5db;
+            color: #374151;
+        }
+
+        td {
+            padding: 12px;
+            border: 1px solid #d1d5db;
+        }
+
+        tr:nth-child(even) {
+            background: #f9fafb;
+        }
+
+        /* Encadrés importants */
+        .important {
+            background: #fef3c7;
+            border-left: 4px solid #f59e0b;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .important strong {
+            color: #92400e;
+        }
+
+        .info-box {
+            background: #f0f9ff;
+            border-left: 4px solid #0284c7;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tip {
+            background: #f0fdf4;
+            border-left: 4px solid #10b981;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+        }
+
+        .tip::before {
+            content: "💡 Astuce : ";
+            font-weight: 600;
+            color: #065f46;
+        }
+
+        /* Numérotation */
+        .question {
+            font-weight: 600;
+            color: #1f2937;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        /* Code / formules */
+        code {
+            background: #f3f4f6;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            color: #dc2626;
+        }
+
+        /* Impression */
+        @media print {
+            body {
+                background: white;
+            }
+
+            .no-print {
+                display: none;
+            }
+
+            .print-container {
+                max-width: none;
+                box-shadow: none;
+            }
+
+            .page {
+                padding: 15mm;
+                box-shadow: none;
+            }
+
+            .student-field input {
+                border-bottom: 2px solid #000;
+            }
+
+            .answer-box {
+                border: 2px solid #000;
+            }
+.bandeau {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espace de 20px entre l'image et le texte */
+}
+
+            h2 {
+                page-break-after: avoid;
+            }
+
+            table {
+                page-break-inside: avoid;
+            }
+        }
+
+        @page {
+            size: A4;
+            margin: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="no-print">
+
+        <button onclick="window.print()">📄 Sauvegarder / Imprimer en PDF</button>
+    </div>
+
+    <div class="print-container">
+        <!-- PAGE 1 -->
+       <!--  <div class="page">-->
+            <div class="header">
+                <div class="header-top">
+                    <div class="header-left">
+<div class="bandeau">
+<h1>
+ 
+                        <div class="subtitle"><br>TP - Comment une IA apprend-elle ? <br><br>
+                        Reconnaissance automatique de formes géométriques<br><br>
+   			@ F.Rouillé  - 2026</div>
+                    </div> </h1></div>
+                    <div class="header-right"><br>
+                      <img src="logo4.png" alt="Icône Robot" width="150" height="150">  
+                    </div>
+                </div>
+            </div>
+
+            <div class="student-info">
+                <div class="student-field">
+                    <label>Élève 1 :</label>
+                    <input type="text" placeholder="Nom" class="editable">
+                </div>
+                <div class="student-field">
+                    <label>Prénom :</label>
+                    <input type="text" placeholder="Prénom" class="editable">
+                </div>
+                <div class="student-field">
+                    <label>Élève 2 :</label>
+                    <input type="text" placeholder="Nom" class="editable">
+                </div>
+                <div class="student-field">
+                    <label>Prénom :</label>
+                    <input type="text" placeholder="Prénom" class="editable">
+                </div>
+                <div class="student-field class-field">
+                    <label>Classe :</label>
+                    <input type="text" placeholder="Terminale..." class="editable">
+                </div>
+            </div>
+
+            <div class="objectives">
+                <h2>🎯 Objectifs du TP</h2>
+                <ul>
+                    <li>Comprendre le principe de l'apprentissage supervisé d'une intelligence artificielle</li>
+                    <li>Identifier les caractéristiques pertinentes pour reconnaître une forme</li>
+                    <li>Comparer les performances d'une IA entraînée vs non-entraînée</li>
+                    <li>Développer un esprit critique sur les algorithmes d'apprentissage automatique</li>
+                </ul>
+            </div>
+
+            <div class="important">
+                <strong>⚠️ Important :</strong> Vous travaillez en binôme. Partagez-vous les tâches équitablement et discutez ensemble de vos observations avant de rédiger vos réponses.
+            </div>
+
+            <h2>I. Situation problème (10 min)</h2>
+
+            <div class="info-box">
+                <strong>Contexte :</strong> Comment votre smartphone peut-il reconnaître votre visage pour le déverrouiller ? Comment une application peut-elle distinguer automatiquement un chat d'un chien sur une photo ? Toutes ces technologies utilisent l'intelligence artificielle et plus précisément l'<strong>apprentissage automatique</strong>.
+            </div>
+
+            <p class="question">Question 1 : Qu'est-ce qu'une "caractéristique" selon vous ? Donnez un exemple.</p>
+             <textarea></textarea>
+
+            <p class="question">Question 2 : Comment décririez-vous un carré à quelqu'un qui ne peut pas le voir ? Listez 3 caractéristiques qui le définissent.</p>
+             <textarea></textarea>
+
+            <h2>II. Découverte de l'interface (15 min)</h2>
+
+            <p><strong>📱 Ouvrez l'interface d'apprentissage de l'IA fournie par votre enseignant.</strong></p>
+
+            <h3>A. Première exploration</h3>
+
+            <p>Dessinez librement sur le canvas :</p>
+            <ol>
+                <li>Un carré (utilisez le mode "Forme parfaite" si besoin)</li>
+                <li>Un cercle</li>
+                <li>Un triangle</li>
+            </ol>
+
+            <p>Pour chaque forme, observez les caractéristiques affichées.</p>
+
+            <p class="question">Question 3 : Combien de paramètres (caractéristiques) l'IA mesure-t-elle au total ?</p>
+             <textarea></textarea>
+
+            <p class="question">Question 4 : Cochez "Afficher graphique". Quels sont les 3 paramètres qui varient le plus entre un carré, un cercle et un triangle ?</p>
+             <textarea></textarea>
+
+       <!-- </div>-->
+
+        <!-- PAGE 2 -->
+        <!--<div class="page">-->
+            <h2>III. Reconnaissance sans apprentissage (15 min)</h2>
+
+            <h3>A. Test initial</h3>
+
+            <p><strong>Protocole :</strong></p>
+            <ol>
+                <li>Dessinez un cercle assez grand et régulier</li>
+                <li>Cliquez sur le bouton bleu "Reconnaître"</li>
+                <li>Notez les résultats dans le tableau ci-dessous</li>
+                <li>Cliquez sur "Effacer" et répétez avec un carré puis un triangle</li>
+            </ol>
+
+            <p class="question">Question 5 : Complétez le tableau suivant :</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Forme dessinée</th>
+                        <th>IA entraînée (%)</th>
+                        <th>IA non-entraînée (%)</th>
+                        <th>Forme reconnue par IA non-entraînée</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Cercle</td>
+                        <td><input></td>
+                        <td><input></td>
+                        <td><input></td>
+                    </tr>
+                    <tr>
+                        <td>Carré</td>
+                        <td><input></td>
+                        <td><input></td>
+                        <td><input></td>
+                    </tr>
+                    <tr>
+                        <td>Triangle</td>
+                        <td><input></td>
+                        <td><input></td>
+                        <td><input></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="question">Question 6 : Pourquoi l'IA entraînée ne donne-t-elle aucun résultat pour le moment ?</p>
+             <textarea></textarea>
+
+            <p class="question">Question 7 : L'IA non-entraînée fait-elle des erreurs ? Si oui, lesquelles ?</p>
+             <textarea></textarea>
+
+            <h2>IV. Phase d'apprentissage (25 min)</h2>
+
+            <div class="important">
+                <strong>🎓 Mission :</strong> Votre objectif est d'entraîner l'IA en lui montrant plusieurs exemples de chaque forme. L'IA va "apprendre" à reconnaître les caractéristiques communes de chaque type de forme.
+            </div>
+
+            <h3>A. Stratégie d'entraînement</h3>
+
+            <p>Votre binôme va entraîner l'IA avec une stratégie spécifique attribuée par l'enseignant :</p>
+
+            <div class="answer-box">
+                <p><strong>Notre stratégie :</strong> (à remplir selon l'attribution du professeur)</p>
+                <p>□ Stratégie 1 : Formes parfaites uniquement (utiliser le bouton "Forme parfaite")</p>
+                <p>□ Stratégie 2 : Formes dessinées à main levée (mode libre)</p>
+                <p>□ Stratégie 3 : Formes avec bruit (activer "Mode Bruit")</p>
+                <p>□ Stratégie 4 : Mélange de tout (variété maximale)</p>
+            </div>
+
+            <h3>B. Entraînement</h3>
+
+            <p><strong>Consignes :</strong></p>
+            <ol>
+                <li>Dessinez <strong>au minimum 5 exemples</strong> de chaque forme (carré, cercle, triangle)</li>
+                <li>Après chaque dessin, cliquez sur le bouton vert correspondant :
+                    <ul>
+                        <li>"Apprendre Carré" pour un carré</li>
+                        <li>"Apprendre Cercle" pour un cercle</li>
+                        <li>"Apprendre Triangle" pour un triangle</li>
+                    </ul>
+                </li>
+                <li>Vérifiez que les compteurs augmentent dans le panneau "État de l'apprentissage"</li>
+            </ol>
+<!--</div>-->
+        
+
+        <!-- <div class="page"> -->
+       
+            <p class="question">Question 8 : Complétez le tableau de suivi de votre apprentissage :</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Forme</th>
+                        <th>Nombre d'exemples appris</th>
+                        <th>Circularité moyenne observée</th>
+                        <th>Nombre de sommets moyen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Carré</td>
+                        <td><input></td>
+                        <td><input></td>
+                        <td><input></td>
+                    </tr>
+                    <tr>
+                        <td>Cercle</td>
+                        <td><input></td>
+                        <td><input></td>
+                        <td><input></td>
+                    </tr>
+                    <tr>
+                        <td>Triangle</td>
+                        <td><input></td>
+                        <td><input></td>
+                        <td><input></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <h2>V. Tests de reconnaissance (25 min)</h2>
+
+            <h3>A. Formes standards</h3>
+
+            <p>Dessinez 3 nouvelles formes (différentes de celles utilisées pour l'apprentissage) et testez la reconnaissance.</p>
+
+            <p class="question">Question 9 : Résultats des tests :</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Forme testée</th>
+                        <th>IA entraînée (%)</th>
+                        <th>IA non-entraînée (%)</th>
+                        <th>Bonne reconnaissance ?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>Carré</td>
+                        <td><input></td>
+                        <td><input></td>
+                        <td><input></td>
+                    </tr>
+                    <tr>
+                        <td>Cercle</td>
+                        <td><input></td>
+                        <td><input></td>
+                        <td><input></td>
+                    </tr>
+                    <tr>
+                        <td>Triangle</td>
+                        <td><input></td>
+                        <td><input></td>
+                        <td><input></td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <p class="question">Question 10 : L'IA entraînée est-elle plus performante que l'IA non-entraînée ? Justifiez.</p>
+            <textarea></textarea>
+
+            <h3>B. Formes ambiguës</h3>
+
+            <p>Testez maintenant des formes "limites" :</p>
+            <ul>
+                <li>Un carré très allongé (presque un rectangle)</li>
+                <li>Un triangle très aplati</li>
+                <li>Un cercle légèrement ovale</li>
+            </ul>
+
+            <p class="question">Question 11 : Que se passe-t-il avec ces formes ambiguës ? L'IA hésite-t-elle ?</p>
+            <textarea></textarea>
+
+            <h3>C. Influence du bruit</h3>
+
+            <p>Activez le "Mode Bruit" et dessinez une forme. L'IA arrive-t-elle à la reconnaître ?</p>
+
+            <p class="question">Question 12 : Résultat du test avec bruit :</p>
+             <textarea></textarea>
+
+       <!--</div>-->
+
+        <!-- <div class="page"> -->
+        
+            <h2>VI. Étude de l'importance des paramètres (20 min)</h2>
+
+            <div class="info-box">
+                <strong>Investigation :</strong> Tous les paramètres mesurés par l'IA sont-ils vraiment utiles pour reconnaître les formes ? Certains sont-ils plus importants que d'autres ?
+            </div>
+
+            <h3>A. Test paramètre par paramètre</h3>
+
+            <p><strong>Protocole :</strong></p>
+            <ol>
+                <li>Dessinez un cercle parfait</li>
+                <li>Décochez TOUS les paramètres sauf "Circularité"</li>
+                <li>Cliquez sur "Reconnaître" et notez si le cercle est bien identifié</li>
+                <li>Répétez en testant chaque paramètre individuellement</li>
+            </ol>
+
+            <p class="question">Question 13 : Complétez le tableau :</p>
+
+            <table>
+                <thead>
+                    <tr>
+                        <th>Paramètre seul activé</th>
+                        <th>Cercle reconnu ?</th>
+                        <th>Carré reconnu ?</th>
+                        <th>Triangle reconnu ?</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Nombre de sommets</td><td><input></td><td><input></td><td><input></td></tr>
+                    <tr><td>Circularité</td><td><input></td><td><input></td><td><input></td></tr>
+                    <tr><td>Solidité</td><td><input></td><td><input></td><td><input></td></tr>
+                    <tr><td>Distribution distances</td><td><input></td><td><input></td><td><input></td></tr>
+                    <tr><td>Excentricité</td><td><input></td><td><input></td><td><input></td></tr>
+                    <tr><td>Convexité</td><td><input></td><td><input></td><td><input></td></tr>
+                </tbody>
+            </table>
+
+            <p class="question">Question 14 : D'après vos tests, quels sont les 2 paramètres les plus discriminants (les plus efficaces pour distinguer les formes) ?</p>
+             <textarea></textarea>
+
+            <p class="question">Question 15 : Certains paramètres sont-ils inutiles ? Lesquels et pourquoi ?</p>
+            <textarea></textarea>
+
+            <h2>VII. Analyse et synthèse (15 min)</h2>
+
+            <h3>A. Qualité vs Quantité</h3>
+
+            <p class="question">Question 16 : D'après votre expérience, vaut-il mieux entraîner l'IA avec 20 exemples de mauvaise qualité ou 5 exemples parfaits ? Argumentez.</p>
+            <textarea></textarea>
+
+            <h3>B. Généralisation</h3>
+
+            <p class="question">Question 17 : Si vous entraînez l'IA uniquement avec de GRANDS cercles, pensez-vous qu'elle reconnaîtra un PETIT cercle ? Testez et expliquez.</p>
+            <textarea></textarea>
+
+         <!--</div>-->
+
+        <!-- <div class="page"> -->
+       
+            <h3>C. Notion de biais</h3>
+
+            <p class="question">Question 18 : Imaginez que vous entraînez l'IA uniquement avec des carrés alignés horizontalement. Que se passera-t-il si vous lui montrez ensuite un carré tourné à 45° (en forme de losange) ?</p>
+            <textarea></textarea>
+
+            <h2>VIII. Transfert à la vie réelle (10 min)</h2>
+
+            <div class="tip">
+                Les principes que vous avez découverts s'appliquent à TOUTES les intelligences artificielles : reconnaissance faciale, diagnostic médical, voitures autonomes, traduction automatique...
+            </div>
+
+            <p class="question">Question 19 : Comment les principes de ce TP s'appliquent-ils à la reconnaissance faciale ? Quelles pourraient être les "caractéristiques" mesurées ?</p>
+            <textarea></textarea>
+
+            <p class="question">Question 20 : Pourquoi certaines IA de reconnaissance faciale ont-elles des biais (par exemple, moins bonnes performances sur certaines origines ethniques) ? Faites le lien avec votre TP.</p>
+            <textarea></textarea>
+
+            <h2>IX. Conclusion personnelle</h2>
+
+            <p class="question">Question 21 : Résumez en 5 points ce que vous avez appris aujourd'hui sur le fonctionnement d'une IA :</p>
+
+            <div class="answer-box" style="min-height: 200px;">
+                <ol style="margin-left: 20px; margin-top: 10px;">
+                    <li style="margin-bottom: 15px;"><textarea></textarea></li>
+                    <li style="margin-bottom: 15px;"><textarea></textarea></li>
+                    <li style="margin-bottom: 15px;"><textarea></textarea></li>
+                    <li style="margin-bottom: 15px;"><textarea></textarea></li>
+                    <li style="margin-bottom: 15px;"><textarea></textarea></li>
+                </ol>
+            </div>
+
+            <div class="important" style="margin-top: 30px;">
+                <strong>📝 Pour aller plus loin :</strong> Imaginez que vous devez créer une IA pour reconnaître des empreintes digitales. Quels paramètres proposeriez-vous de mesurer ? Discutez-en avec votre binôme et votre professeur.
+            </div>
+<textarea></textarea>
+
+            <hr style="margin: 40px 0; border: none; border-top: 2px solid #e5e7eb;">
+
+            <div style="text-align: center; color: #6b7280; font-size: 13px;">
+                <p><strong>TP Terminale - Enseignement Scientifique</strong></p>
+                <p>© F. Rouille - 2026 | Intelligence Artificielle et Apprentissage Automatique</p>
+            </div>
+        </div>
+    <!--</div>-->
+
+    <script>
+        // Permettre l'édition des champs même après impression
+        document.addEventListener('DOMContentLoaded', function() {
+            // Focus sur le premier champ
+            const firstInput = document.querySelector('.student-field input');
+            if (firstInput) {
+                setTimeout(() => firstInput.focus(), 100);
+            }
+
+            // Sauvegarder automatiquement dans localStorage
+            const inputs = document.querySelectorAll('input');
+            inputs.forEach(input => {
+                // Charger les valeurs sauvegardées
+                const savedValue = localStorage.getItem('tp_' + input.placeholder);
+                if (savedValue) {
+                    input.value = savedValue;
+                }
+
+                // Sauvegarder lors de la modification
+                input.addEventListener('input', function() {
+                    localStorage.setItem('tp_' + this.placeholder, this.value);
+                });
+            });
+        });
+
+        // Fonction d'impression optimisée
+        window.addEventListener('beforeprint', function() {
+            document.title = 'TP_IA_Reconnaissance_Formes';
+        });
+    </script>
+</body>
+</html>

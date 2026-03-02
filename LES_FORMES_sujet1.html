@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>TP IA – Reconnaissance de formes</title>
+
+<style>
+body { font-family: Arial; margin:0; background:#f4f6f8; }
+
+header {
+    background:#3498db; 
+    color:white;
+    padding:20px;
+display: flex;
+    justify-content: center;
+    align-items: center;
+
+}
+
+.bandeau {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espace de 20px entre l'image et le texte */
+}
+
+.container{
+    max-width:900px;
+    margin:auto;
+    background:white;
+    padding:30px;
+    margin-top:20px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.1);
+}
+
+h2{ margin-top:30px; }
+
+textarea, input{
+    width:100%;
+    padding:6px;
+    margin-top:5px;
+    margin-bottom:10px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+}
+
+table, th, td{
+    border:1px solid #ccc;
+}
+
+th, td{
+    padding:6px;
+}
+
+button{
+    padding:10px;
+    margin-top:10px;
+}
+
+.print{ background:#3498db; color:white; }
+.reset{ background:#e74c3c; color:white; }
+</style>
+</head>
+
+<body>
+
+<header>
+
+<div class="bandeau">
+ <img src="logo4.png" alt="Icône Robot" width="150" height="150">
+<h1>TP : Comment une IA apprend-elle ? <br>@  F.Rouillé  - 2026</h1>
+
+</div>
+</header>
+
+<div class="container">
+
+<h2>👥 Identification de l'équipe</h2>
+
+<label>Nom élève 1</label>
+<input type="text" id="nom1">
+
+<label>Prénom élève 1</label>
+<input type="text" id="prenom1">
+
+<label>Nom élève 2</label>
+<input type="text" id="nom2">
+
+<label>Prénom élève 2</label>
+<input type="text" id="prenom2">
+
+<label>Classe</label>
+<input type="text" id="classe">
+
+<hr>
+
+<h2>► Partie 1 – Découverte</h2>
+Ouvrir la page HTML  contenant l'appliquette <br>
+<br>
+Protocole :<br>
+Dessiner librement un carré, un cercle, un triangle<br>
+Cliquer sur "Reconnaître"<br>
+Observer les caractéristiques affichées<br>
+Noter les résultats de l'IA entraînée vs non-entraînée<br>
+
+
+<p><b>Q1. Que se passe-t-il si l’IA n’est pas entraînée ?</b></p>
+<textarea></textarea>
+
+<table>
+<tr>
+<th>Forme dessinée</th>
+<th>Résultat obtenu</th>
+<th>Correct ?</th>
+</tr>
+<tr><td><input></td><td><input></td><td><input></td></tr>
+<tr><td><input></td><td><input></td><td><input></td></tr>
+<tr><td><input></td><td><input></td><td><input></td></tr>
+</table>
+
+<p><b>Q2. Pourquoi l’IA peut-elle se tromper ?</b></p>
+<textarea></textarea>
+
+<h2>► Partie 2 – Influence des paramètres</h2>
+<br>
+Quelles sont les caractéristiques mesurées ?<br>
+<textarea></textarea>
+Certaines semblent-elles plus importantes que d'autres ? <br>
+<textarea></textarea>
+Cocher "Afficher graphique" : que remarquez-vous ?  <br>
+<textarea></textarea>
+<p><b>Q3. Le nombre de sommets suffit-il ?</b></p>
+<textarea></textarea>
+
+<p><b>Q4. Pourquoi le cercle pose problème ?</b></p>
+<textarea></textarea>
+
+<p><b>Q5. Deux formes différentes peuvent-elles avoir le même ratio ?</b></p>
+<textarea></textarea>
+
+<p><b>Q6. La surface seule suffit-elle ?</b></p>
+<textarea></textarea>
+
+<h2>► Partie 3 – Conclusion</h2>
+
+<p>Une IA apprend en enregistrant :</p>
+<textarea></textarea>
+
+<p>Elle reconnaît en comparant :</p>
+<textarea></textarea>
+
+<p>Les performances dépendent :</p>
+<textarea></textarea>
+
+<br>
+
+<button class="print" onclick="window.print()">☺ Imprimer / PDF</button>
+<button class="reset" onclick="resetAll()">◙ Réinitialiser complètement</button>
+
+</div>
+
+<script>
+// -------- AUTO SAVE --------
+function saveData(){
+    const data={};
+    document.querySelectorAll("input, textarea").forEach((el,i)=>{
+        data[i]=el.value;
+    });
+    localStorage.setItem("TP_IA_Formes",JSON.stringify(data));
+}
+
+function loadData(){
+    const saved=localStorage.getItem("TP_IA_Formes");
+    if(saved){
+        const data=JSON.parse(saved);
+        document.querySelectorAll("input, textarea").forEach((el,i)=>{
+            if(data[i]) el.value=data[i];
+        });
+    }
+}
+
+function resetAll(){
+    if(confirm("Supprimer toutes les réponses ?")){
+        localStorage.removeItem("TP_IA_Formes");
+        location.reload();
+    }
+}
+
+document.querySelectorAll("input, textarea").forEach(el=>{
+    el.addEventListener("input",saveData);
+});
+
+setInterval(saveData,30000);
+
+loadData();
+</script>
+
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tutoriel Teachable Machine - TP Intelligence Artificielle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Mono:wght@400;700&family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #FF6B35;
+            --secondary: #004E89;
+            --accent: #F7B801;
+            --dark: #1A1A2E;
+            --light: #F8F9FA;
+            --gradient-1: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            --gradient-2: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            --gradient-3: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+ font-family:Arial;
+            font-family: 'Outfit', sans-serif;
+font-family: 'DM Sans', sans-serif;
+            line-height: 1.8;
+            color: var(--dark);
+            background: var(--light);
+            overflow-x: hidden;
+        }
+        
+        /* Animated background */
+        .bg-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            opacity: 0.03;
+            background-image: 
+                repeating-linear-gradient(45deg, transparent, transparent 35px, var(--secondary) 35px, var(--secondary) 70px),
+                repeating-linear-gradient(-45deg, transparent, transparent 35px, var(--primary) 35px, var(--primary) 70px);
+            animation: patternMove 60s linear infinite;
+        }
+        
+        @keyframes patternMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(70px, 70px); }
+        }
+        
+        header {
+            background: var(--gradient-1);
+            color: white;
+            padding: 4rem 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+margin : 90px;
+        }
+        
+        header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: dotMove 20s linear infinite;
+        }
+        
+        @keyframes dotMove {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 3.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            position: relative;
+            text-shadow: 3px 3px 0 rgba(0,0,0,0.2);
+            animation: slideInDown 0.8s ease-out;
+        }
+        
+        @keyframes slideInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .subtitle {
+            font-size: 1.3rem;
+            opacity: 0.95;
+            font-weight: 300;
+            animation: fadeIn 1s ease-out 0.3s both;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 3rem 2rem;
+        }
+.bandeau {
+    display: flex;
+    align-items: center;
+margin: 30px;
+    gap: 20px; /* Espace de 20px entre l'image et le texte */
+}
+        
+        .intro-section {
+            background: white;
+            border-radius: 20px;
+            padding: 3rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+            border-left: 6px solid var(--primary);
+            animation: slideInUp 0.8s ease-out 0.5s both;
+        }
+        
+        @keyframes slideInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .intro-section h2 {
+            color: var(--secondary);
+            font-size: 2rem;
+            margin-bottom: 1rem;
+            font-weight: 800;
+        }
+        
+        .step {
+            background: white;
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.08);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            animation: slideInUp 0.8s ease-out both;
+        }
+        
+        .step:nth-child(1) { animation-delay: 0.6s; }
+        .step:nth-child(2) { animation-delay: 0.7s; }
+        .step:nth-child(3) { animation-delay: 0.8s; }
+        .step:nth-child(4) { animation-delay: 0.9s; }
+        .step:nth-child(5) { animation-delay: 1s; }
+        .step:nth-child(6) { animation-delay: 1.1s; }
+        .step:nth-child(7) { animation-delay: 1.2s; }
+        
+        .step::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 6px;
+            height: 100%;
+            background: var(--gradient-2);
+            transform: scaleY(0);
+            transition: transform 0.4s ease;
+            transform-origin: top;
+        }
+        
+        .step:hover {
+            transform: translateX(10px);
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+        }
+        
+        .step:hover::before {
+            transform: scaleY(1);
+        }
+        
+        .step-number {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 50px;
+            height: 50px;
+            background: var(--gradient-3);
+            color: white;
+            border-radius: 50%;
+            font-family: 'Space Mono', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            box-shadow: 0 4px 15px rgba(79, 172, 254, 0.4);
+        }
+        
+        .step h3 {
+            color: var(--secondary);
+            font-size: 1.8rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+        
+        .step p {
+            margin-bottom: 1rem;
+            color: #555;
+            font-size: 1.05rem;
+        }
+        
+        .tip {
+            background: linear-gradient(135deg, #FFF4E6 0%, #FFE8CC 100%);
+            border-left: 4px solid var(--accent);
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+            position: relative;
+        }
+        
+        .tip::before {
+            content: 'ðŸ’¡';
+            font-size: 1.5rem;
+            position: absolute;
+            top: 1.5rem;
+            left: -2.5rem;
+            background: var(--accent);
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .tip strong {
+            color: var(--primary);
+            font-weight: 700;
+        }
+        
+        .code-block {
+            background: var(--dark);
+            color: #00f2fe;
+            padding: 1.5rem;
+            border-radius: 12px;
+            font-family: 'Space Mono', monospace;
+            font-size: 0.95rem;
+            overflow-x: auto;
+            margin: 1.5rem 0;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+        }
+        
+        .highlight {
+            background: linear-gradient(120deg, rgba(255,107,53,0.2) 0%, rgba(255,107,53,0.2) 100%);
+            background-repeat: no-repeat;
+            background-size: 100% 40%;
+            background-position: 0 80%;
+            padding: 0 4px;
+            font-weight: 600;
+        }
+        
+        .model-types {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+        
+        .model-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+        
+        .model-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border-color: var(--primary);
+        }
+        
+        .model-card .icon {
+            font-size: 3rem;
+            margin-bottom: 1rem;
+        }
+        
+        .model-card h4 {
+            color: var(--secondary);
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            font-weight: 700;
+        }
+        
+        .checklist {
+            list-style: none;
+            margin: 1.5rem 0;
+        }
+        
+        .checklist li {
+            padding: 0.8rem 0;
+            padding-left: 2.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+        
+        .checklist li::before {
+            content: 'âœ“';
+            position: absolute;
+            left: 0;
+            color: white;
+            background: var(--gradient-2);
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+        
+        .checklist li:hover {
+            transform: translateX(5px);
+            color: var(--primary);
+        }
+        
+        .warning {
+            background: linear-gradient(135deg, #FFE8E8 0%, #FFD4D4 100%);
+            border-left: 4px solid #FF4444;
+            padding: 1.5rem;
+            border-radius: 12px;
+            margin: 1.5rem 0;
+        }
+        
+        .warning strong {
+            color: #CC0000;
+            font-weight: 700;
+        }
+        
+        footer {
+            background: var(--dark);
+            color: white;
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 4rem;
+        }
+        
+        footer p {
+            opacity: 0.8;
+            font-size: 1.1rem;
+        }
+        
+        .btn {
+            display: inline-block;
+            background: var(--gradient-2);
+            color: white;
+            padding: 1rem 2.5rem;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(245,87,108,0.4);
+            margin-top: 1rem;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(245,87,108,0.6);
+        }
+        
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2.5rem;
+            }
+            
+            .subtitle {
+                font-size: 1.1rem;
+            }
+            
+            .step {
+                padding: 2rem;
+            }
+            
+            .model-types {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-pattern"></div>
+    
+    <header>
+<div class="bandeau">
+ <img src="logo4.png" alt="Icône Robot" width="300" height="300">
+        <h1>    Teachable Machine <br> 
+<span class="subtitle">Guide pratique pour créer votre premier modèle d'IA</span><br>        
+        <span class="subtitle"> @ F.Rouillé    -   2026</span></h1>
+</div>
+    </header>
+    
+    <div class="container">
+        <div class="intro-section">
+            <h2>Qu'est-ce que Teachable Machine ?</h2>
+            <p><strong>Teachable Machine</strong> est un outil gratuit développé par Google qui permet de <span class="highlight">créer des modèles de machine learning</span> sans aucune connaissance en programmation. Vous pouvez entraîner un ordinateur à  reconnaître des images, des sons ou des poses corporelles, puis utiliser ce modèle dans vos projets.</p>
+            
+            <div class="model-types">
+                <div class="model-card">
+                    <div class="icon">🏫</div>
+                    <h4>Images</h4>
+                    <p>Reconnaissance d'objets, de visages, de gestes</p>
+                </div>
+                <div class="model-card">
+                    <div class="icon">📢</div>
+                    <h4>Sons</h4>
+                    <p>Classification audio, reconnaissance vocale</p>
+                </div>
+                <div class="model-card">
+                    <div class="icon">🗿</div>
+                    <h4>Poses</h4>
+                    <p>Détection de mouvements corporels</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">1</span>
+            <h3>Accéder à  Teachable Machine</h3>
+            <p>Rendez-vous sur le site officiel :</p>
+            <div class="code-block">https://teachablemachine.withgoogle.com/</div>
+            <p>Cliquez sur <strong>"Get Started"</strong> pour commencer.</p>
+            <div class="tip">
+                <strong>Astuce :</strong> Aucune installation n'est nécessaire ! Tout fonctionne directement dans votre navigateur web.
+            </div>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">2</span>
+            <h3>Choisir le type de projet</h3>
+            <p>Sélectionnez le type de modèle que vous souhaitez créer :</p>
+            <ul class="checklist">
+                <li><strong>Image Project</strong> - Pour la reconnaissance d'images</li>
+                <li><strong>Audio Project</strong> - Pour la classification de sons</li>
+                <li><strong>Pose Project</strong> - Pour la dÃ©tection de poses</li>
+            </ul>
+            <p>Puis choisissez entre <strong>Standard</strong> (recommandé) ou <strong>Embedded</strong> (pour objets connectés).</p>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">3</span>
+            <h3>Créer vos classes</h3>
+            <p>Une <strong>classe</strong> représente une catégorie que votre modèle doit apprendre Ã  reconnaître.</p>
+            <p><strong>Exemple pour un projet de reconnaissance d'objets :</strong></p>
+            <ul class="checklist">
+                <li>Classe 1 : "Pommes"</li>
+                <li>Classe 2 : "Poires" </li>
+                <li>Classe 3 : "cerises"</li>
+            </ul>
+            <p>Cliquez sur <strong>"Add a class"</strong> pour ajouter autant de classes que nécessaire. Renommez chaque classe avec un nom descriptif.</p>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">4</span>
+            <h3>Collecter les données d'entraînement</h3>
+            <p>Pour chaque classe, vous devez fournir des <span class="highlight">exemples d'entraînement</span>. Plus vous fournissez d'exemples variés, meilleur sera votre modèle !</p>
+            
+            <p><strong>Méthodes de collecte :</strong></p>
+            <ul class="checklist">
+                <li><strong>Webcam</strong> : Maintenez le bouton "Hold to Record" pour capturer des images en temps réel</li>
+                <li><strong>Upload</strong> : Importez des images depuis votre ordinateur</li>
+            </ul>
+            
+            <div class="tip">
+                <strong>Recommandation :</strong> Collectez au minimum 50-100 exemples par classe. Variez les angles, l'éclairage, l'arriÃ¨re-plan et la distance pour améliorer la robustesse du modèle.
+            </div>
+            
+            <div class="warning">
+                <strong>⚠ Attention :</strong> Assurez-vous que vos exemples sont bien représentatifs et diversifiés. Un modèle entraîné uniquement avec des photos dans une pièce sombre ne fonctionnera pas bien en plein jour !
+            </div>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">5</span>
+            <h3>Entraîner le modèle</h3>
+            <p>Une fois vos données collectées, cliquez sur le bouton <strong>"Train Model"</strong>.</p>
+            <p>Le processus d'entraînement commence immédiatement. Selon la quantité de données, cela peut prendre de quelques secondes Ã  quelques minutes.</p>
+            
+            <div class="tip">
+                <strong>Pendant l'entraînement :</strong> Vous pouvez voir une barre de progression. Le modèle apprend Ã  distinguer vos différentes classes en analysant les caractéristiques visuelles de vos exemples.
+            </div>
+            
+            <p><strong>Paramètres avancés</strong> (optionnel) :</p>
+            <ul class="checklist">
+                <li><strong>Epochs</strong> : Nombre de fois que le modèle parcourt vos données (défaut : 50)</li>
+                <li><strong>Batch size</strong> : Nombre d'exemples traités simultanément (défaut : 16)</li>
+                <li><strong>Learning rate</strong> : Vitesse d'apprentissage (défaut : 0.001)</li>
+            </ul>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">6</span>
+            <h3>Tester votre modèle</h3>
+            <p>Dans la section <strong>"Preview"</strong>, testez votre modèle en temps réel avec votre webcam ou en uploadant de nouvelles images.</p>
+            <p>Le modèle affiche pour chaque classe un <strong>pourcentage de confiance</strong> indiquant sa certitude.</p>
+            
+            <p><strong>Exemple de résultat :</strong></p>
+            <div class="code-block">
+Poommes : 95%
+Poires : 3%
+Cerises : 2%
+            </div>
+            
+            <div class="tip">
+                <strong>Conseil :</strong> Si les résultats ne sont pas satisfaisants, retournez Ã  l'étape 4 pour ajouter plus d'exemples d'entraînement, surtout pour les cas oÃ¹ le modèle se trompe.
+            </div>
+        </div>
+        
+        <div class="step">
+            <span class="step-number">7</span>
+            <h3>Exporter votre modèle</h3>
+            <p>Une fois satisfait des performances, cliquez sur <strong>"Export Model"</strong>.</p>
+            
+            <p><strong>Options d'export :</strong></p>
+            <ul class="checklist">
+                <li><strong>TensorFlow.js</strong> : Pour une intégration web (JavaScript)</li>
+                <li><strong>TensorFlow</strong> : Pour Python</li>
+                <li><strong>TensorFlow Lite</strong> : Pour applications mobiles (Android/iOS)</li>
+            </ul>
+            
+            <p>Vous pouvez télécharger le modèle ou obtenir un <strong>lien partageable</strong> pour l'utiliser directement en ligne.</p>
+            
+            <div class="code-block">
+// Exemple d'utilisation en JavaScript
+const URL = "https://teachablemachine.withgoogle.com/models/votre-modele/";
+const model = await tmImage.load(URL + "model.json", URL + "metadata.json");
+            </div>
+            
+            <div class="tip">
+                <strong>Pour le TP :</strong> Notez bien l'URL de votre modèle, vous en aurez besoin pour l'intégrer dans votre code !
+            </div>
+        </div>
+        
+        <div class="intro-section" style="margin-top: 3rem;">
+            <h2>🏥 Conseils pour réussir votre TP</h2>
+            <ul class="checklist">
+                <li>Choisissez des classes bien distinctes visuellement</li>
+                <li>Utilisez un bon éclairage lors de la capture</li>
+                <li>Variez les exemples (angles, distances, arrière-plans)</li>
+                <li>Testez régulièrement pendant l'entraînement</li>
+                <li>N'hésitez pas Ã  recommencer si les résultats ne sont pas satisfaisants</li>
+                <li>Documentez votre processus et vos observations</li>
+            </ul>
+            
+            <div style="text-align: center; margin-top: 2rem;">
+                <a href="https://teachablemachine.withgoogle.com/" class="btn" target="_blank">🔔 Commencer maintenant</a>
+            </div>
+        </div>
+    </div>
+    
+    <footer>
+        <p>âœ¨ Bon courage pour votre TP ! L'IA n'attend que vous ! âœ¨</p>
+        <p style="margin-top: 1rem; font-size: 0.9rem;">Tutoriel Teachable Machine - 2025</p>
+    </footer>
+</body>
+</html>

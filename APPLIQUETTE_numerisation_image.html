@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>📸 Numérisation d'image – Terminale enseignement scientifique</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+        }
+        body {
+            margin: 0;
+            min-height: 100vh;
+            background: linear-gradient(145deg, #2b1a4a 0%, #1d2b64 100%);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        .card {
+            max-width: 1400px;
+            width: 100%;
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-radius: 48px;
+            padding: 30px;
+            box-shadow: 0 25px 50px -8px rgba(0,0,0,0.6), inset 0 2px 4px rgba(255,255,255,0.3);
+            border: 2px solid rgba(255,255,255,0.25);
+        }
+        h1 {
+            margin: 0 0 8px 0;
+            font-weight: 700;
+            font-size: 2.5rem;
+            background: linear-gradient(135deg, #ffe57f, #ffb77c);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            letter-spacing: -0.5px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        h1 span {
+            font-size: 2rem;
+            background: rgba(255,255,240,0.2);
+            padding: 8px 18px;
+            border-radius: 60px;
+            -webkit-text-fill-color: white;
+            color: white;
+            border: 2px dashed #ffd966;
+        }
+        .sub {
+            color: #cfbaff;
+            font-size: 1.2rem;
+            margin-bottom: 30px;
+            padding-left: 10px;
+            border-left: 6px solid #ffaa5e;
+        }
+        .image-panel {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+        .image-box {
+            flex: 1 1 300px;
+            background: rgba(10, 5, 30, 0.4);
+            border-radius: 36px;
+            padding: 20px 20px 25px 20px;
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 215, 140, 0.5);
+            box-shadow: 0 20px 30px -10px black;
+            transition: transform 0.2s ease;
+        }
+        .image-box:hover {
+            transform: scale(1.01);
+            border-color: #ffbc7c;
+        }
+        .image-box h2 {
+            color: #ffecb0;
+            font-weight: 500;
+            margin-top: 0;
+            margin-bottom: 15px;
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .image-box h2::before {
+            content: "🖼️";
+            font-size: 2rem;
+            filter: drop-shadow(2px 4px 4px #00000055);
+        }
+        .image-box:last-child h2::before {
+            content: "✨";
+        }
+        .canvas-container {
+            background: #1e162e;
+            border-radius: 24px;
+            padding: 10px;
+            text-align: center;
+            border: 3px solid #ffc285;
+            box-shadow: inset 0 0 15px #2a1e3a;
+        }
+        canvas {
+            max-width: 100%;
+            height: auto;
+            border-radius: 18px;
+            box-shadow: 0 10px 18px black;
+            background-color: #2d1f3a;
+            display: block;
+            margin: 0 auto;
+        }
+        .size-info {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 18px;
+            background: #291e45;
+            border-radius: 50px;
+            padding: 12px 22px;
+            color: white;
+            font-weight: 600;
+            font-size: 1.2rem;
+            border: 2px solid #fdba6a;
+            backdrop-filter: blur(2px);
+        }
+        .size-info div {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .badge {
+            background: #fbaF45;
+            color: #1c0930;
+            border-radius: 40px;
+            padding: 5px 18px;
+            font-size: 1.3rem;
+            font-weight: 700;
+        }
+        .controls {
+            background: rgba(0, 0, 0, 0.35);
+            border-radius: 60px;
+            padding: 30px 35px;
+            margin: 30px 0 20px 0;
+            border: 2px solid #ffb96a;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            backdrop-filter: blur(4px);
+        }
+        .slider-group {
+            min-width: 240px;
+            flex: 1;
+        }
+        .slider-group label {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            color: #ffddb0;
+            font-weight: 600;
+            font-size: 1.4rem;
+            margin-bottom: 10px;
+        }
+        .slider-group input {
+            width: 100%;
+            height: 14px;
+            border-radius: 30px;
+            background: linear-gradient(90deg, #a066ff, #ffa552);
+            -webkit-appearance: none;
+            appearance: none;
+            outline: none;
+            border: 2px solid white;
+        }
+        .slider-group input::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 30px;
+            height: 30px;
+            background: #ffe98b;
+            border-radius: 50%;
+            border: 4px solid #a55eff;
+            box-shadow: 0 4px 10px black;
+            cursor: pointer;
+            transition: 0.1s;
+        }
+        .slider-group input::-webkit-slider-thumb:hover {
+            transform: scale(1.2);
+            background: #ffffc0;
+        }
+        .value-badge {
+            background: #441e6b;
+            color: #ffd966;
+            padding: 8px 25px;
+            border-radius: 40px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            border: 2px solid #f9b953;
+            text-align: center;
+            margin-top: 12px;
+        }
+        .file-zone {
+            display: flex;
+            justify-content: center;
+            margin: 20px 0 15px 0;
+        }
+        .file-label {
+            background: linear-gradient(145deg, #ffb557, #ff914d);
+            color: #240046;
+            font-weight: bold;
+            font-size: 1.5rem;
+            padding: 18px 45px;
+            border-radius: 50px;
+            cursor: pointer;
+            box-shadow: 0 10px 0 #8a2f00, 0 10px 20px black;
+            transition: 0.1s ease;
+            border: 3px solid #fff2c0;
+            display: inline-flex;
+            align-items: center;
+            gap: 20px;
+        }
+        .file-label:hover {
+            transform: translateY(5px);
+            box-shadow: 0 5px 0 #8a2f00, 0 15px 25px black;
+        }
+        #file-input {
+            display: none;
+        }
+        .footer-note {
+            color: #cbb5fe;
+            text-align: center;
+            font-size: 1rem;
+            margin-top: 25px;
+            background: #170f2b80;
+            padding: 12px;
+            border-radius: 50px;
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <h1>
+            📟 NUMÉRISATION D'IMAGE 
+            <span>enseignement scientifique</span>
+        </h1>
+<h1>  @ F.Rouillé - 2026 </h1>
+        <div class="sub">⚡ joue sur la résolution & le nombre de couleurs — résultat en temps réel</div>
+
+        <!-- Deux colonnes images -->
+        <div class="image-panel">
+            <!-- Originale -->
+            <div class="image-box">
+                <h2>Originale</h2>
+                <div class="canvas-container">
+                    <canvas id="canvasOriginal" width="400" height="300"></canvas>
+                </div>
+                <div class="size-info" id="infoOriginal">
+                    <div>📏 taille</div>
+                    <div class="badge" id="origSize">—</div>
+                </div>
+            </div>
+            <!-- Transformée -->
+            <div class="image-box">
+                <h2>Numérisée</h2>
+                <div class="canvas-container">
+                    <canvas id="canvasModified" width="400" height="300"></canvas>
+                </div>
+                <div class="size-info" id="infoModified">
+                    <div>📐 taille</div>
+                    <div class="badge" id="modifSize">—</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Contrôles : résolution + nb couleurs -->
+        <div class="controls">
+            <div class="slider-group">
+                <label>🔍 <span>RÉSOLUTION</span> (facteur d'échelle)</label>
+                <input type="range" id="resolutionSlider" min="1" max="100" value="100" step="1">
+                <div class="value-badge" id="resolutionValue">100 %</div>
+            </div>
+            <div class="slider-group">
+                <label>🎨 <span>NOMBRE DE COULEURS</span> (par canal)</label>
+                <input type="range" id="colorSlider" min="2" max="256" value="256" step="1">
+                <div class="value-badge" id="colorValue">256</div>
+            </div>
+        </div>
+
+        <!-- Import fichier -->
+        <div class="file-zone">
+            <label for="file-input" class="file-label">
+                <span>📂</span> CHARGER UNE IMAGE <span>📁</span>
+            </label>
+            <input type="file" id="file-input" accept="image/*">
+        </div>
+
+        <div class="footer-note">
+            ⭐ les modifications sont instantanées : bouge les curseurs !
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            // Éléments DOM
+            const fileInput = document.getElementById('file-input');
+            const canvasOrig = document.getElementById('canvasOriginal');
+            const canvasMod = document.getElementById('canvasModified');
+            const ctxOrig = canvasOrig.getContext('2d', { willReadFrequently: true });
+            const ctxMod = canvasMod.getContext('2d', { willReadFrequently: true });
+
+            const resolutionSlider = document.getElementById('resolutionSlider');
+            const colorSlider = document.getElementById('colorSlider');
+            const resolutionValue = document.getElementById('resolutionValue');
+            const colorValue = document.getElementById('colorValue');
+
+            const origSizeBadge = document.getElementById('origSize');
+            const modifSizeBadge = document.getElementById('modifSize');
+
+            // Image source (originale)
+            let originalImage = null;  // objet Image
+            let originalWidth = 0, originalHeight = 0;
+
+            // Mettre à jour les labels des curseurs
+            function updateSliderLabels() {
+                resolutionValue.textContent = resolutionSlider.value + ' %';
+                colorValue.textContent = colorSlider.value;
+            }
+
+            resolutionSlider.addEventListener('input', updateSliderLabels);
+            colorSlider.addEventListener('input', updateSliderLabels);
+            updateSliderLabels();
+
+            // Fonction pour charger une image depuis le fichier
+            fileInput.addEventListener('change', function(e) {
+                const file = e.target.files[0];
+                if (!file) return;
+                if (!file.type.startsWith('image/')) {
+                    alert('Veuillez choisir une image (jpg, png, etc.)');
+                    return;
+                }
+
+                const reader = new FileReader();
+                reader.onload = function(ev) {
+                    const img = new Image();
+                    img.onload = function() {
+                        // Stocker l'image et ses dimensions originales
+                        originalImage = img;
+                        originalWidth = img.width;
+                        originalHeight = img.height;
+
+                        // Adapter la taille des canvas pour qu'ils gardent les proportions sans dépasser 500px de large
+                        const maxDisplayWidth = 500;
+                        let displayWidth = originalWidth;
+                        let displayHeight = originalHeight;
+                        if (originalWidth > maxDisplayWidth) {
+                            displayWidth = maxDisplayWidth;
+                            displayHeight = Math.floor(originalHeight * (maxDisplayWidth / originalWidth));
+                        }
+                        canvasOrig.width = displayWidth;
+                        canvasOrig.height = displayHeight;
+                        canvasMod.width = displayWidth;
+                        canvasMod.height = displayHeight;
+
+                        // Dessiner l'image originale dans le canvas gauche (redimensionnée à l'affichage)
+                        ctxOrig.drawImage(originalImage, 0, 0, displayWidth, displayHeight);
+
+                        // Mettre à jour les infos de taille originales
+                        updateSizeInfo(originalWidth, originalHeight, origSizeBadge);
+
+                        // Lancer le calcul de l'image modifiée
+                        applyTransformation();
+                    };
+                    img.src = ev.target.result;
+                };
+                reader.readAsDataURL(file);
+            });
+
+            // Fonction pour mettre à jour l'affichage des tailles
+            function updateSizeInfo(width, height, badgeElement) {
+                const pixels = width * height;
+                badgeElement.innerHTML = `${width} x ${height} px <span style="font-size:0.8rem; opacity:0.9;"> (${pixels} px)</span>`;
+            }
+
+            // Traitement principal : appliquer résolution + nb couleurs
+            function applyTransformation() {
+                if (!originalImage) return;  // pas d'image chargée
+
+                // 1. récupérer les paramètres
+                let resolPercent = parseInt(resolutionSlider.value, 10);  // 1..100
+                let numColors = parseInt(colorSlider.value, 10);          // 2..256
+
+                // Éviter division par zéro
+                if (numColors < 2) numColors = 2;
+
+                // Dimensions cible = facteur de résolution (pourcentage)
+                // On applique le facteur à la taille originale (pas à l'affichage)
+                let targetWidth = Math.max(1, Math.floor(originalWidth * resolPercent / 100));
+                let targetHeight = Math.max(1, Math.floor(originalHeight * resolPercent / 100));
+
+                // Mettre à jour l'affichage de la taille modifiée (avant même le dessin, on l'affichera après)
+                // mais on le fera après le calcul.
+
+                // Étape 1 : créer un canvas temporaire pour redimensionner l'image originale
+                const resizeCanvas = document.createElement('canvas');
+                resizeCanvas.width = targetWidth;
+                resizeCanvas.height = targetHeight;
+                const tmpCtx = resizeCanvas.getContext('2d', { willReadFrequently: true });
+                tmpCtx.drawImage(originalImage, 0, 0, targetWidth, targetHeight);
+
+                // Étape 2 : récupérer les pixels pour quantifier les couleurs
+                let imageData = tmpCtx.getImageData(0, 0, targetWidth, targetHeight);
+                let data = imageData.data;  // tableau RGBA
+
+                // Facteur de quantification (pour chaque canal)
+                // On réduit à 'numColors' niveaux. niveau = floor( valeur / step ) * step 
+                // avec step = 255 / (numColors - 1)
+                const step = 255 / (numColors - 1);
+
+                for (let i = 0; i < data.length; i += 4) {
+                    // R, G, B (on laisse le canal alpha inchangé)
+                    for (let j = 0; j < 3; j++) {
+                        let val = data[i + j];
+                        // Quantification : on arrondit au step le plus proche
+                        let quantized = Math.round(val / step) * step;
+                        // saturer entre 0 et 255
+                        data[i + j] = Math.min(255, Math.max(0, quantized));
+                    }
+                }
+
+                // Replacer les pixels modifiés
+                tmpCtx.putImageData(imageData, 0, 0);
+
+                // Étape 3 : dessiner le résultat sur le canvas de droite
+                // On doit d'abord redimensionner le canvas de droite à la taille d'affichage (proportionnelle)
+                // Pour garder une cohérence visuelle, on utilise la même hauteur d'affichage que le canvas gauche.
+                // Mais on veut que l'image remplisse le canvas avec la bonne échelle.
+                // Le canvas de droite a actuellement les dimensions d'affichage (max 500px de large) 
+                // issues du chargement (adaptées à l'image originale). On va le redimensionner 
+                // pour qu'il affiche l'image réduite, mais on veut voir la miniature.
+                // On peut soit dessiner l'image réduite directement dans le canvas en la stretchant à la taille d'affichage,
+                // soit ajuster la taille du canvas pour qu'elle corresponde exactement à targetWidth/targetHeight 
+                // (mais alors l'affichage peut devenir trop petit/grand).
+                // Pour une meilleure lisibilité, on va garder le canvas de droite à la même taille d'affichage que la gauche,
+                // et on dessinera l'image réduite en la redimensionnant à cette taille d'affichage.
+                // Comme ça l'utilisateur voit l'effet de résolution (pixels grossis) tout en gardant le même cadre.
+                // C'est plus parlant : l'image de droite paraîtra "pixelisée" si la résolution est faible.
+                // Donc on va redessiner le contenu du canvas temporaire (taille réduite) dans le canvas d'affichage.
+
+                const displayWidth = canvasOrig.width;
+                const displayHeight = canvasOrig.height;
+
+                // Effacer le canvas modifié et dessiner l'image réduite en l'étirant
+                ctxMod.clearRect(0, 0, displayWidth, displayHeight);
+                ctxMod.drawImage(resizeCanvas, 0, 0, displayWidth, displayHeight);
+
+                // Mettre à jour les infos de taille (modifiée)
+                updateSizeInfo(targetWidth, targetHeight, modifSizeBadge);
+            }
+
+            // Appliquer la transformation à chaque mouvement de slider
+            resolutionSlider.addEventListener('input', function() {
+                if (originalImage) applyTransformation();
+            });
+
+            colorSlider.addEventListener('input', function() {
+                if (originalImage) applyTransformation();
+            });
+
+            // Initialisation avec une image placeholder (ou rien)
+            // On peut ajouter un petit texte dans les canvas
+            ctxOrig.fillStyle = '#2e1b47';
+            ctxOrig.fillRect(0, 0, canvasOrig.width, canvasOrig.height);
+            ctxOrig.fillStyle = '#b39ddb';
+            ctxOrig.font = 'bold 22px "Segoe UI"';
+            ctxOrig.textAlign = 'center';
+            ctxOrig.fillText('charge une image', canvasOrig.width/2, canvasOrig.height/2);
+            ctxMod.fillStyle = '#2e1b47';
+            ctxMod.fillRect(0, 0, canvasMod.width, canvasMod.height);
+            ctxMod.fillStyle = '#b39ddb';
+            ctxMod.font = 'bold 22px "Segoe UI"';
+            ctxMod.textAlign = 'center';
+            ctxMod.fillText('prévisualisation', canvasMod.width/2, canvasMod.height/2);
+
+            origSizeBadge.textContent = '—';
+            modifSizeBadge.textContent = '—';
+        })();
+    </script>
+</body>
+</html>

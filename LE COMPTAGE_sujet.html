@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TP - J'apprends à compter (version Teachable Machine)</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Roboto, system-ui, sans-serif;
+        }
+        body {
+            background: #f0f4fa;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px 15px;
+        }
+        .tp-container {
+            max-width: 1000px;
+            width: 100%;
+            background: white;
+            border-radius: 28px 28px 20px 20px;
+            box-shadow: 0 20px 40px rgba(0,15,40,0.15);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        .title-band {
+            background: #3498db;
+            padding: 22px 30px 18px 30px;
+            color: white;
+            border-bottom: 4px solid #ffb347;
+        }
+        .title-band h1 {
+            margin: 0;
+            font-size: 2.5rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+        }
+        .title-band h2 {
+            margin: 8px 0 0 0;
+            font-size: 1.4rem;
+            font-weight: 400;
+            opacity: 0.9;
+            font-style: italic;
+        }
+        .tp-content {
+            padding: 30px 35px 40px 35px;
+            background: white;
+        }
+        .student-section {
+            background: #e9f0fc;
+            border-left: 6px solid #0b2b5c;
+            border-radius: 16px;
+            padding: 20px 25px;
+            margin-bottom: 30px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 30px;
+        }
+        .student-card {
+            flex: 1 1 200px;
+            min-width: 200px;
+        }
+        .student-card label {
+            font-weight: 600;
+            color: #0b2b5c;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 1.1rem;
+        }
+        .student-card textarea {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 1rem;
+            border: 2px solid #b3c9f0;
+            border-radius: 14px;
+            background: white;
+            resize: both;
+            overflow: auto;
+            min-width: 180px;
+            min-height: 50px;
+        }
+        .student-card textarea:focus {
+            border-color: #0b2b5c;
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(11,43,92,0.15);
+        }
+        .consigne {
+            background: #fbfeff;
+            border-radius: 24px;
+            padding: 10px 20px 20px 20px;
+            margin: 25px 0 20px 0;
+            border: 2px dashed #a0bde0;
+        }
+        .consigne h3 {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #1e3a6b;
+            font-size: 1.6rem;
+            margin: 10px 0 15px 0;
+        }
+        .etape {
+            background: white;
+            border-radius: 20px;
+            padding: 18px 22px;
+            margin-bottom: 20px;
+            box-shadow: 0 6px 12px rgba(0,20,40,0.05);
+            border: 1px solid #d5e2ff;
+        }
+        .etape p {
+            margin: 0 0 10px 0;
+            font-size: 1.1rem;
+        }
+        .etape strong {
+            color: #103778;
+        }
+        .reponse-field {
+            margin-top: 15px;
+        }
+        .reponse-field label {
+            font-weight: 600;
+            color: #2d4b81;
+            display: block;
+            margin-bottom: 6px;
+        }
+        .reponse-field textarea {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 1rem;
+            border: 2px solid #c1d6fc;
+            border-radius: 20px;
+            resize: both;
+            min-height: 90px;
+            background: #fafcff;
+            line-height: 1.5;
+        }
+        .reponse-field textarea:focus {
+            border-color: #0b2b5c;
+            background: #ffffff;
+        }
+        .teachable-info {
+            background: #e2f0e8;
+            border-radius: 18px;
+            padding: 18px 22px;
+            margin: 20px 0;
+            border-left: 6px solid #0f6b3e;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            flex-wrap: wrap;
+        }
+        .teachable-info img.placeholder-icon {
+            font-size: 3rem;
+            background: #0f6b3e;
+            color: white;
+            width: 60px;
+            height: 60px;
+            border-radius: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .teachable-info p {
+            margin: 0;
+            flex: 1;
+            font-size: 1.05rem;
+        }
+        .teachable-info a {
+            color: #0f6b3e;
+            font-weight: 700;
+            text-decoration: none;
+            border-bottom: 2px solid;
+        }
+        .btn-group {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin: 35px 0 15px;
+            gap: 15px;
+        }
+        .save-btn {
+            background: #0b2b5c;
+            border: none;
+            color: white;
+            font-weight: 600;
+            font-size: 1.3rem;
+            padding: 16px 36px;
+            border-radius: 60px;
+            cursor: pointer;
+            box-shadow: 0 8px 14px rgba(11,43,92,0.3);
+            transition: 0.1s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            border: 2px solid transparent;
+        }
+        .save-btn:hover {
+            background: #1d4280;
+            transform: scale(1.02);
+        }
+        .reset-btn {
+            background: white;
+            border: 2px solid #0b2b5c;
+            color: #0b2b5c;
+            font-weight: 600;
+            font-size: 1.1rem;
+            padding: 12px 28px;
+            border-radius: 60px;
+            cursor: pointer;
+        }
+        .footer-note {
+            text-align: center;
+            color: #3e5577;
+            margin-top: 15px;
+            font-size: 0.95rem;
+        }
+.bandeau {
+    display: flex;
+    align-items: center;
+    gap: 20px; /* Espace de 20px entre l'image et le texte */
+}
+        .astuce-box {
+            background: #fff2d9;
+            border-radius: 16px;
+            padding: 12px 20px;
+            margin-top: 10px;
+            border: 2px solid #ffb347;
+        }
+    </style>
+</head>
+<body>
+<div class="tp-container" id="tp-pdf-content">
+<center>
+    <div class="title-band">
+<div class="bandeau">
+ <img src="logo4.png" alt="Icône Robot" width="150" height="150">
+        <h1>  J'apprends à compter<br>
+        @F.Rouillé - 2026 (version Teachable Machine)</h1>
+    </div></div>
+</center>
+    <div class="tp-content">
+        <!-- Identité équipe -->
+        <div class="student-section">
+            <div class="student-card">
+                <label>👤 Élève 1 · Prénom & NOM</label>
+                <textarea id="eleve1" placeholder=" " rows="2"></textarea>
+            </div>
+            <div class="student-card">
+                <label>👤 Élève 2 · Prénom & NOM</label>
+                <textarea id="eleve2" placeholder=" " rows="2"></textarea>
+            </div>
+        </div>
+
+        <!-- Introduction spécifique Teachable Machine -->
+        <div class="consigne">
+            <h3><span>🎯</span> Objectif du TP avec Teachable Machine</h3>
+            <p style="font-size:1.15rem;">Apprendre à une IA à <strong>compter des objets</strong>... sans savoir compter ! L'astuce ? L'IA va apprendre à reconnaître visuellement les quantités ("1 stylo", "2 stylos", "3 stylos") comme elle reconnaîtrait des variétés de fruits.</p>
+        </div>
+
+        <!-- ENCADRÉ TEACHABLE MACHINE -->
+        <div class="teachable-info">
+            <div class="placeholder-icon">🎯</div>
+            <p><strong>🔗 Outil utilisé :</strong> <a href="https://teachablemachine.withgoogle.com/" target="_blank">Teachable Machine (Google)</a> - Module "Image Project"<br>
+            ➡️ Pas d'installation, pas de code. Entraînement instantané avec la webcam ou des images.</p>
+        </div>
+
+        <!-- ÉTAPE 1 - Collecte des données -->
+        <div class="etape">
+            <p><strong>⚙️ Étape 1 – Créer les classes (20 min)</strong><br>
+            Dans Teachable Machine, créez un projet "Image Project". Vous allez créer <strong>4 classes</strong> : "0 objet", "1 objet", "2 objets", "3 objets" (ou plus selon votre matériel).<br>
+            <em>Important : l'IA n'apprend pas à compter, elle apprend à associer une image à une étiquette de quantité.</em></p>
+            
+            <div class="astuce-box">
+                💡 <strong>Astuce :</strong> Pour la classe "0 objet", prenez des photos de la surface vide (table, fond neutre). Pour les autres, variez les positions, la distance, l'orientation des objets.
+            </div>
+            
+            <div class="reponse-field">
+                <label>📋 Quelles classes avez-vous créées ? Quels objets utilisez-vous ?</label>
+                <textarea id="etape1" placeholder="  "></textarea>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 2 - Entraînement -->
+        <div class="etape">
+            <p><strong>⚙️ Étape 2 – Entraînement express (5 min)</strong><br>
+            Pour chaque classe, prenez <strong>50 à 100 échantillons</strong> avec la webcam. Variez les fonds, la luminosité, l'angle. Cliquez sur "Train Model" : l'entraînement ne dure que quelques secondes.</p>
+            
+            <div class="reponse-field">
+                <label>🎥 Combien d'échantillons par classe ? Avez-vous rencontré des difficultés ?</label>
+                <textarea id="etape2" placeholder=" "></textarea>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 3 - Test en direct -->
+        <div class="etape">
+            <p><strong>🎯 Étape 3 – Test en temps réel (15 min)</strong><br>
+            Basculez sur l'onglet "Preview". Présentez différentes configurations à la webcam : 1 objet, 2 objets, 3 objets, 0 objet. Observez les scores de confiance.</p>
+            
+            <div class="reponse-field">
+                <label>📊 Résultats des tests (notez au moins 5 essais avec les scores) :</label>
+                <textarea id="etape3" placeholder="  "></textarea>
+            </div>
+        </div>
+
+        <!-- ÉTAPE 4 - Analyse -->
+        <div class="etape">
+            <p><strong>🔬 Étape 4 – Analyse critique (15 min)</strong><br>
+            Dans quels cas l'IA se trompe-t-elle ? Pourquoi selon vous ? Que faudrait-il faire pour améliorer la précision ?</p>
+            
+            <div class="reponse-field">
+                <label>💡 Vos observations :</label>
+                <textarea id="etape4" placeholder=" "></textarea>
+            </div>
+        </div>
+
+        <!-- DÉFI SUPPLÉMENTaire (optionnel mais ludique) -->
+        <div class="etape" style="background:#eef4ff;">
+            <p><strong>🏆 DÉFI – Le comptage "impossible"</strong><br>
+            Testez votre modèle avec des objets qu'il n'a jamais vus (ex. : modèle entraîné avec des stylos, testez avec des clés). Marche encore ? Pourquoi ?</p>
+            
+            <div class="reponse-field">
+                <label>🔑 Résultat du défi (objet inconnu) :</label>
+                <textarea id="defi" placeholder=" "></textarea>
+            </div>
+        </div>
+
+        <!-- CONCLUSION -->
+        <div class="etape">
+            <p><strong>🧪 Conclusion :</strong> Cette expérience montre une limite fondamentale des IA actuelles. Laquelle ?</p>
+            <div class="reponse-field">
+                <label>📌 Votre réponse :</label>
+                <textarea id="conclusion" placeholder="   "></textarea>
+            </div>
+        </div>
+
+        <!-- RAPPEL PRATIQUE -->
+        <div class="remarque" style="background:#e6f2ff; border-left-color:#0b2b5c;">
+            ⚡ <strong>Mode d'emploi Teachable Machine :</strong> teachablemachine.withgoogle.com → "Get Started" → "Image Project" → "Standard image model". Utilisez la webcam pour capturer les exemples classe par classe.
+        </div>
+
+        <!-- BOUTONS -->
+        <div class="btn-group">
+            <button class="save-btn" id="savePdfBtn">💾 Sauvegarder / Enregistrer en PDF</button>
+            <button class="reset-btn" id="resetFieldsBtn">x Réinitialiser les champs</button>
+        </div>
+        <div class="footer-note">
+            * Tous les champs sont redimensionnables (tirez l'angle en bas à droite).
+        </div>
+    </div>
+</div>
+
+<script>
+    (function() {
+        const saveBtn = document.getElementById('savePdfBtn');
+        const resetBtn = document.getElementById('resetFieldsBtn');
+        
+        // Récupération de tous les champs
+        const eleve1 = document.getElementById('eleve1');
+        const eleve2 = document.getElementById('eleve2');
+        const etape1 = document.getElementById('etape1');
+        const etape2 = document.getElementById('etape2');
+        const etape3 = document.getElementById('etape3');
+        const etape4 = document.getElementById('etape4');
+        const defi = document.getElementById('defi');
+        const conclusion = document.getElementById('conclusion');
+
+        // Reset
+        resetBtn.addEventListener('click', function() {
+            eleve1.value = '';
+            eleve2.value = '';
+            etape1.value = '';
+            etape2.value = '';
+            etape3.value = '';
+            etape4.value = '';
+            defi.value = '';
+            conclusion.value = '';
+        });
+
+        // Sauvegarde PDF
+        saveBtn.addEventListener('click', function() {
+            window.print();          
+           
+        });
+    })();
+</script>
+</body>
+</html>
