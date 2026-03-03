@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<title>IA – Apprentissage de formes (Terminale)</title>
+
+<style>
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    text-align: center;
+}
+
+
+#header {
+    background: linear-gradient(to right, #1565c0, #1e88e5, #29b6f6);
+    color: white;
+    padding: 20px 10px;
+    margin-bottom: 15px;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.2);
+}
+
+#header h1 {
+    margin: 0;
+    font-size: 28px;
+}
+
+#header p {
+    margin: 5px 0 0 0;
+    font-size: 16px;
+    opacity: 0.9;
+}
+canvas {
+    border: 2px solid #333;
+    background: white;
+    margin: 5px;
+}
+
+button {
+    margin: 4px;
+    padding: 8px 12px;
+    border: none;
+    color: white;
+    font-weight: bold;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.tool { background:#7f8c8d; }
+.learn { background:#2ecc71; }
+.recognize { background:#3498db; }
+.clear { background:#e74c3c; }
+
+button:hover { opacity:0.85; }
+
+#panel {
+    width: 760px;
+    margin: auto;
+    background: white;
+    padding: 10px;
+}
+</style>
+</head>
+
+<body>
+
+<div id="header">
+    <h1>Apprentissage simplifié d'une IA</h1>
+@ F.Rouillé -2026
+    <p>Terminale – Enseignement scientifique</p>
+</div>
+
+<canvas id="canvas" width="400" height="400"></canvas><br>
+
+<button class="tool" onclick="setMode('libre')">✏️ Libre</button>
+<button class="tool" onclick="setMode('polygone')">🔺 Polygone</button>
+<button class="tool" onclick="setMode('cercle')" disabled>⚪ Cercle</button>
+<button class="tool" onclick="toggleBruit()">🌪️ Bruit</button>
+
+<br><br>
+
+<b>Forme parfaite</b>
+<select id="shapeType">
+    <option value="carre">Carré</option>
+    <option value="rectangle">Rectangle</option>
+    <option value="triangle">Triangle</option>
+</select>
+
+Taille
+<input type="range" id="sizeSlider" min="60" max="180" value="120">
+
+Rotation
+<input type="range" id="rotSlider" min="0" max="360" value="0">
+
+<button class="tool" onclick="drawPerfectShape()">⭐ Dessiner</button>
+
+<br><br>
+
+<button class="learn" onclick="learn('carre')">Apprendre Carré</button>
+<button class="learn" onclick="learn('triangle')">Apprendre Triangle</button>
+<button class="learn" onclick="learn('cercle')">Apprendre Cercle</button>
+
+<br><br>
+
+<button class="recognize" onclick="recognize()">Reconnaître</button>
+<button class="clear" onclick="clearCanvas()">Effacer</button>
+
+<br><br>
+
+<label>
+<input type="checkbox" id="showGraph" onchange="drawGraph()">
+Afficher le graphique des caractéristiques
+</label>
+
+<br>
+<center>
+<canvas id="graph" width="400" height="300"
+style="display:none;"></canvas>
+</center>
+<div id="panel"></div>
+
+<script>
+const canvas = document.getElementById("canvas");
+const ctx = canvas.getContext("2d");
+
+let mode = "libre";
+let bruit = false;
+let drawing = false;
+let points = [];
+let poly = [];
+let polyClosed = false;
+
+let memory = { carre: [], triangle: [], cercle: [] };
+
+drawGrid();
+
+function setMode(m) {
+    mode = m;
+    poly = [];
+    polyClosed = false;
+}
+
+function toggleBruit() {
+    bruit = !bruit;
+    log("Mode bruit : " + bruit);
+}
+
+function addNoise(x,y) {
+    if (!bruit) return {x,y};
+    return {x:x+(Math.random()-0.5)*6, y:y+(Math.random()-0.5)*6};
+}
+
+function drawGrid() {
+    const step = 20;
+
+    ctx.save();
+    ctx.strokeStyle = "#ddd";
+    ctx.lineWidth = 1;
+
+    for (let x = 0; x <= canvas.width; x += step) {
+        ctx.beginPath();
+        ctx.moveTo(x, 0);
+        ctx.lineTo(x, canvas.height);
+        ctx.stroke();
+    }
+
+    for (let y = 0; y <= canvas.height; y += step) {
+        ctx.beginPath();
+        ctx.moveTo(0, y);
+        ctx.lineTo(canvas.width, y);
+        ctx.stroke();
+    }
+
+    ctx.restore();
+}
+
+
+canvas.addEventListener("mousedown", e => {
+    if (mode === "polygone") {
+        let x = e.offsetX, y = e.offsetY;
+
+        if (poly.length > 2) {
+            let p0 = poly[0];
+            if (Math.hypot(x-p0.x, y-p0.y) < 10) {
+                ctx.lineTo(p0.x, p0.y);
+                ctx.stroke();
+                polyClosed = true;
+                points = [...poly];
+                log("Polygone fermé – sommets : " + points.length);
+                return;
+            }
+        }
+
+        poly.push({x,y});
+        if (poly.length === 1) {
+            ctx.beginPath();
+            ctx.moveTo(x,y);
+        } else {
+            ctx.lineTo(x,y);
+            ctx.stroke();
+        }
+        ctx.fillRect(x-3,y-3,6,6);
+        return;
+    }
+
+    drawing = true;
+    points = [];
+    ctx.beginPath();
+    ctx.moveTo(e.offsetX, e.offsetY);
+});
+
+canvas.addEventListener("mousemove", e => {
+    if (!drawing || mode !== "libre") return;
+    let p = addNoise(e.offsetX, e.offsetY);
+    ctx.lineTo(p.x, p.y);
+    ctx.stroke();
+    points.push(p);
+});
+
+canvas.addEventListener("mouseup", e => {
+    drawing = false;
+
+    if (mode === "cercle") {
+        let cx = 200, cy = 200;
+        let r = Math.hypot(e.offsetX-cx, e.offsetY-cy);
+        ctx.beginPath();
+        ctx.arc(cx,cy,r,0,2*Math.PI);
+        ctx.stroke();
+        points = [];
+        for (let a=0;a<360;a+=10) {
+            let rad = a*Math.PI/180;
+            points.push(addNoise(cx+r*Math.cos(rad), cy+r*Math.sin(rad)));
+        }
+    }
+});
+
+function drawPerfectShape() {
+    clearCanvas();
+    let type = shapeType.value;
+    let size = +sizeSlider.value;
+    let angle = +rotSlider.value;
+    let cx=200, cy=200;
+    let base=[];
+
+    if (type==="carre") {
+        let s=size/2;
+        base=[{x:cx-s,y:cy-s},{x:cx+s,y:cy-s},{x:cx+s,y:cy+s},{x:cx-s,y:cy+s}];
+    }
+    if (type==="rectangle") {
+        let w=size, h=size/1.5;
+        base=[{x:cx-w/2,y:cy-h/2},{x:cx+w/2,y:cy-h/2},{x:cx+w/2,y:cy+h/2},{x:cx-w/2,y:cy+h/2}];
+    }
+    if (type==="triangle") {
+        let h=size;
+        base=[{x:cx,y:cy-h/2},{x:cx-h/2,y:cy+h/2},{x:cx+h/2,y:cy+h/2}];
+    }
+
+    points = base.map(p => rotate(p,cx,cy,angle));
+
+    ctx.beginPath();
+    ctx.moveTo(points[0].x,points[0].y);
+    for(let i=1;i<points.length;i++) ctx.lineTo(points[i].x,points[i].y);
+    ctx.closePath();
+    ctx.stroke();
+}
+
+function rotate(p,cx,cy,a){
+    let r=a*Math.PI/180;
+    let dx=p.x-cx, dy=p.y-cy;
+    return {x:cx+dx*Math.cos(r)-dy*Math.sin(r),
+            y:cy+dx*Math.sin(r)+dy*Math.cos(r)};
+}
+
+function extractFeatures() {
+    let minX=Math.min(...points.map(p=>p.x));
+    let maxX=Math.max(...points.map(p=>p.x));
+    let minY=Math.min(...points.map(p=>p.y));
+    let maxY=Math.max(...points.map(p=>p.y));
+    let ratio=(maxX-minX)/(maxY-minY);
+    let sommets=(mode==="polygone"||points.length<=4)?points.length:0;
+    return {ratio,sommets};
+}
+
+function learn(label) {
+    let f = extractFeatures();
+    memory[label].push(f);
+    log(`Appris ${label} → ratio=${f.ratio.toFixed(2)} sommets=${f.sommets}`);
+    drawGraph();
+}
+
+function recognize() {
+    let f = extractFeatures();
+    let best={l:"?",d:999};
+    for(let l in memory){
+        memory[l].forEach(m=>{
+            let d=Math.abs(f.ratio-m.ratio)+Math.abs(f.sommets-m.sommets);
+            if(d<best.d) best={l,d};
+        });
+    }
+    log(`<b>Reconnaissance :</b> ${best.l}`);
+}
+
+function drawGraph() {
+    const graph=document.getElementById("graph");
+    if(!showGraph.checked){ graph.style.display="none"; return; }
+    graph.style.display="block";
+    const g=graph.getContext("2d");
+    g.clearRect(0,0,400,300);
+
+    g.beginPath();
+    g.moveTo(50,40); g.lineTo(50,260); g.lineTo(360,260);
+    g.stroke();
+
+    for(let l in memory){
+        memory[l].forEach(p=>{
+            let x=50+p.ratio*80;
+            let y=260-p.sommets*40;
+            g.fillStyle=l==="carre"?"green":l==="triangle"?"orange":"blue";
+            g.beginPath(); g.arc(x,y,6,0,2*Math.PI); g.fill();
+        });
+    }
+}
+
+function clearCanvas() {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    drawGrid();   // ← quadrillage toujours présent
+    points = [];
+    poly = [];
+    polyClosed = false;
+}
+
+
+function log(msg){
+    panel.innerHTML+=msg+"<hr>";
+}
+</script>
+
+</body>
+</html>
